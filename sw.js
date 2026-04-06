@@ -1,4 +1,4 @@
-const CACHE = 'clear-skies-v2';
+const CACHE = 'clear-skies-v3';
 
 const ASSETS = [
   './',

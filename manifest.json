@@ -2,7 +2,7 @@
   "name": "Clear Skies — Night Sky Guide",
   "short_name": "Clear Skies",
   "description": "Monthly interactive night sky guide — 114mm reflector telescope",
-  "start_url": "./index.html",
+  "start_url": "https://clearskies.starstucklab.com",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#09090f",
