@@ -242,9 +242,10 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 }
 textarea.f-input { resize: vertical; min-height: 70px; }
 .f-label-sub {
-  font-family: var(--sans); font-size: 10px; color: var(--dim);
-  letter-spacing: .04em; margin-bottom: 6px; opacity: .8;
+  font-family: var(--sans); font-size: 12px; color: var(--dim);
+  letter-spacing: .04em; margin-bottom: 6px; opacity: .85;
 }
+.f-ac-chips:empty { display: none; }
 
 /* Date / start / end row — 3 cols; date spans full width on very narrow screens */
 .f-row3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; }
