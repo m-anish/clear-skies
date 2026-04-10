@@ -232,10 +232,19 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
   border: 1px solid var(--border2); border-radius: 6px;
   color: var(--text); font-family: var(--sans); font-size: 15px;
   padding: 9px 12px; outline: none; transition: border-color .15s; -webkit-appearance: none;
+  color-scheme: dark;
 }
 .f-input:focus { border-color: var(--teal); }
 .f-input::placeholder { color: var(--dim); }
+.f-input[type="date"]::-webkit-calendar-picker-indicator,
+.f-input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0.55; cursor: pointer; filter: brightness(1.8);
+}
 textarea.f-input { resize: vertical; min-height: 70px; }
+.f-label-sub {
+  font-family: var(--sans); font-size: 10px; color: var(--dim);
+  letter-spacing: .04em; margin-bottom: 6px; opacity: .8;
+}
 
 /* Date / start / end row — 3 cols; date spans full width on very narrow screens */
 .f-row3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; }
@@ -416,11 +425,13 @@ function buildDOM() {
 
       <div class="f-field f-cond-row">
         <div>
-          <div class="f-label">Seeing &nbsp;1 = poor · 5 = perfect</div>
+          <div class="f-label">Seeing</div>
+          <div class="f-label-sub">1 = poor &nbsp;·&nbsp; 5 = perfect</div>
           <div class="f-stars" id="f-seeing"></div>
         </div>
         <div>
-          <div class="f-label">Transparency &nbsp;1 = hazy · 5 = crystal</div>
+          <div class="f-label">Transparency</div>
+          <div class="f-label-sub">1 = hazy &nbsp;·&nbsp; 5 = crystal</div>
           <div class="f-stars" id="f-transp"></div>
         </div>
       </div>
