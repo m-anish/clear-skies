@@ -64,11 +64,11 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
   background: rgba(9,9,15,0.98);
 }
 #log-overlay-header .log-title {
-  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
   color: var(--teal); letter-spacing: .06em; text-transform: uppercase; flex: 1;
 }
 #log-overlay-header .log-count-badge {
-  font-family: var(--sans); font-size: 10px; color: var(--dim);
+  font-family: var(--sans); font-size: 12px; color: var(--dim);
   background: var(--card); border: 1px solid var(--border);
   padding: 2px 9px; border-radius: 20px; letter-spacing: .04em;
 }
@@ -83,13 +83,13 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 
 /* ── PRIVACY NOTICE (overlay) ── */
 .log-privacy-notice {
-  font-family: var(--sans); font-size: 10px; color: var(--dim);
+  font-family: var(--sans); font-size: 12px; color: var(--dim);
   padding: 5px 18px 11px;
   background: rgba(9,9,15,0.98);
   border-bottom: 1px solid var(--border2);
   display: flex; align-items: center; gap: 6px; letter-spacing: .02em;
 }
-.log-privacy-notice .pn-lock { font-size: 11px; flex-shrink: 0; opacity: .7; }
+.log-privacy-notice .pn-lock { font-size: 13px; flex-shrink: 0; opacity: .7; }
 .log-privacy-notice strong   { color: var(--muted); font-weight: 500; }
 
 /* ── TOOLBAR ── */
@@ -102,7 +102,7 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 }
 .log-view-toggle { display: flex; border: 1px solid var(--border2); border-radius: 5px; overflow: hidden; }
 .log-view-toggle button {
-  font-family: var(--sans); font-size: 11px; padding: 5px 13px;
+  font-family: var(--sans); font-size: 13px; padding: 5px 13px;
   background: transparent; border: none; color: var(--muted);
   cursor: pointer; letter-spacing: .03em; transition: background .15s, color .15s; white-space: nowrap;
 }
@@ -110,7 +110,7 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 .log-view-toggle button.active { background: var(--card); color: var(--text); }
 .log-spacer { flex: 1; }
 .lb {
-  font-family: var(--sans); font-size: 11px; padding: 5px 12px;
+  font-family: var(--sans); font-size: 13px; padding: 5px 12px;
   border-radius: 5px; border: 1px solid var(--border2);
   background: var(--card); color: var(--text);
   cursor: pointer; letter-spacing: .03em; transition: background .15s, color .15s; white-space: nowrap;
@@ -126,7 +126,7 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 .log-empty {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; padding: 60px 20px;
-  color: var(--dim); font-family: var(--sans); font-size: 12px; text-align: center; gap: 10px;
+  color: var(--dim); font-family: var(--sans); font-size: 14px; text-align: center; gap: 10px;
 }
 .log-empty-icon { font-size: 32px; opacity: .5; }
 
@@ -140,16 +140,16 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
   padding: 10px 14px; cursor: pointer; user-select: none; flex-wrap: wrap;
 }
 .log-entry-date {
-  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  font-family: var(--sans); font-size: 14px; font-weight: 600;
   color: var(--text); white-space: nowrap; min-width: 86px;
 }
-.log-entry-time { font-family: var(--sans); font-size: 11px; color: var(--dim); white-space: nowrap; }
+.log-entry-time { font-family: var(--sans); font-size: 13px; color: var(--dim); white-space: nowrap; }
 .log-entry-objs { flex: 1; display: flex; flex-wrap: wrap; gap: 3px; min-width: 0; }
 .obj-chip {
   display: inline-block; background: rgba(64,192,160,0.1);
   border: 1px solid rgba(64,192,160,0.25); color: var(--teal);
-  border-radius: 3px; font-family: var(--sans); font-size: 10px;
-  padding: 1px 6px; white-space: nowrap;
+  border-radius: 3px; font-family: var(--sans); font-size: 12px;
+  padding: 2px 7px; white-space: nowrap;
 }
 .log-entry-cond { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
 .cond-pip { display: flex; gap: 2px; }
@@ -158,7 +158,7 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 .cond-pip span.off { background: var(--border2); }
 .log-entry-actions { display: flex; gap: 4px; flex-shrink: 0; }
 .log-entry-actions button {
-  font-family: var(--sans); font-size: 10px; padding: 3px 8px;
+  font-family: var(--sans); font-size: 12px; padding: 4px 9px;
   border-radius: 4px; border: 1px solid var(--border2);
   background: transparent; color: var(--muted); cursor: pointer; transition: background .1s, color .1s;
 }
@@ -167,12 +167,12 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 .log-entry-body { display: none; padding: 0 14px 12px; border-top: 1px solid var(--border); }
 .log-entry-body.open { display: block; }
 .log-entry-notes {
-  font-family: var(--sans); font-size: 12px; color: var(--muted);
+  font-family: var(--sans); font-size: 14px; color: var(--muted);
   line-height: 1.65; margin-top: 10px; font-style: italic;
 }
 .log-entry-meta-row {
   display: flex; gap: 18px; margin-top: 10px; flex-wrap: wrap;
-  font-family: var(--sans); font-size: 11px; color: var(--dim);
+  font-family: var(--sans); font-size: 13px; color: var(--dim);
 }
 .log-entry-meta-row span b { color: var(--muted); font-weight: 500; }
 
@@ -199,7 +199,7 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
 }
 .modal-header h4 {
-  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
   color: var(--text); letter-spacing: .03em;
 }
 .modal-close {
@@ -212,30 +212,40 @@ body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgb
 
 /* ── PRIVACY NOTICE (modal) ── */
 .modal-privacy {
-  font-family: var(--sans); font-size: 10px; color: var(--dim);
+  font-family: var(--sans); font-size: 12px; color: var(--dim);
   display: flex; align-items: center; gap: 5px;
   margin-bottom: 16px; letter-spacing: .02em;
   background: rgba(64,192,160,0.05); border: 1px solid rgba(64,192,160,0.12);
   border-radius: 6px; padding: 7px 10px;
 }
-.modal-privacy .pn-lock { opacity: .7; font-size: 11px; flex-shrink: 0; }
+.modal-privacy .pn-lock { opacity: .7; font-size: 13px; flex-shrink: 0; }
 .modal-privacy strong   { color: var(--muted); font-weight: 500; }
 
 /* ── FORM ── */
 .f-field { margin-bottom: 14px; }
 .f-label {
-  font-family: var(--sans); font-size: 10px; text-transform: uppercase;
+  font-family: var(--sans); font-size: 12px; text-transform: uppercase;
   letter-spacing: .08em; color: var(--dim); margin-bottom: 5px;
 }
 .f-input {
   width: 100%; background: rgba(255,255,255,0.04);
   border: 1px solid var(--border2); border-radius: 6px;
-  color: var(--text); font-family: var(--sans); font-size: 13px;
-  padding: 8px 11px; outline: none; transition: border-color .15s; -webkit-appearance: none;
+  color: var(--text); font-family: var(--sans); font-size: 15px;
+  padding: 9px 12px; outline: none; transition: border-color .15s; -webkit-appearance: none;
+  color-scheme: dark;
 }
 .f-input:focus { border-color: var(--teal); }
 .f-input::placeholder { color: var(--dim); }
+.f-input[type="date"]::-webkit-calendar-picker-indicator,
+.f-input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0.55; cursor: pointer; filter: brightness(1.8);
+}
 textarea.f-input { resize: vertical; min-height: 70px; }
+.f-label-sub {
+  font-family: var(--sans); font-size: 12px; color: var(--dim);
+  letter-spacing: .04em; margin-bottom: 6px; opacity: .85;
+}
+.f-ac-chips:empty { display: none; }
 
 /* Date / start / end row — 3 cols; date spans full width on very narrow screens */
 .f-row3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; }
@@ -251,9 +261,9 @@ textarea.f-input { resize: vertical; min-height: 70px; }
 /* tap-rating */
 .f-stars { display: flex; gap: 5px; }
 .f-star {
-  width: 36px; height: 36px; border-radius: 6px;
+  width: 40px; height: 40px; border-radius: 6px;
   border: 1px solid var(--border2); background: rgba(255,255,255,0.04);
-  font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--dim);
+  font-family: var(--sans); font-size: 15px; font-weight: 700; color: var(--dim);
   cursor: pointer; user-select: none; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   transition: background .1s, color .1s, border-color .1s;
@@ -268,7 +278,7 @@ textarea.f-input { resize: vertical; min-height: 70px; }
   display: inline-flex; align-items: center; gap: 5px;
   background: rgba(64,192,160,0.12); border: 1px solid rgba(64,192,160,0.3);
   color: var(--teal); border-radius: 4px;
-  font-family: var(--sans); font-size: 11px; padding: 3px 8px;
+  font-family: var(--sans); font-size: 13px; padding: 4px 10px;
 }
 .f-chip-x { cursor: pointer; opacity: .7; font-size: 14px; line-height: 1; transition: opacity .1s; }
 .f-chip-x:hover { opacity: 1; }
@@ -280,25 +290,25 @@ textarea.f-input { resize: vertical; min-height: 70px; }
 }
 .f-dropdown.open { display: block; }
 .f-dd-cat {
-  font-family: var(--sans); font-size: 9px; text-transform: uppercase;
+  font-family: var(--sans); font-size: 11px; text-transform: uppercase;
   letter-spacing: .1em; color: var(--dim);
   padding: 6px 12px 3px; background: rgba(255,255,255,0.02);
   border-bottom: 1px solid var(--border); position: sticky; top: 0;
 }
 .f-dd-item {
-  padding: 9px 12px; cursor: pointer;
+  padding: 10px 13px; cursor: pointer;
   display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
-  font-family: var(--sans); font-size: 12px; color: var(--text);
+  font-family: var(--sans); font-size: 14px; color: var(--text);
   border-bottom: 1px solid var(--border); transition: background .1s;
 }
 .f-dd-item:last-child { border-bottom: none; }
 .f-dd-item:hover, .f-dd-item.hi { background: rgba(64,192,160,0.08); }
 .f-dd-item .dd-name { font-weight: 500; }
-.f-dd-item .dd-type { font-size: 10px; color: var(--dim); text-align: right; flex-shrink: 0; }
+.f-dd-item .dd-type { font-size: 12px; color: var(--dim); text-align: right; flex-shrink: 0; }
 
 /* month badge */
 .log-month-badge {
-  font-family: var(--sans); font-size: 10px;
+  font-family: var(--sans); font-size: 12px;
   color: var(--gold); background: rgba(240,192,64,0.08);
   border: 1px solid rgba(240,192,64,0.2);
   padding: 2px 9px; border-radius: 20px; letter-spacing: .04em;
@@ -306,35 +316,35 @@ textarea.f-input { resize: vertical; min-height: 70px; }
 
 /* ── DESKTOP SCALE-UP (≥ 900px) ── */
 @media (min-width: 900px) {
-  #log-overlay-header .log-title      { font-size: 16px; }
-  #log-overlay-header .log-count-badge{ font-size: 12px; }
-  .log-privacy-notice                 { font-size: 12px; padding: 6px 22px 13px; }
-  .log-privacy-notice .pn-lock        { font-size: 13px; }
+  #log-overlay-header .log-title      { font-size: 19px; }
+  #log-overlay-header .log-count-badge{ font-size: 14px; }
+  .log-privacy-notice                 { font-size: 14px; padding: 6px 22px 13px; }
+  .log-privacy-notice .pn-lock        { font-size: 15px; }
   #log-toolbar                        { padding: 13px 22px 12px; }
-  .log-view-toggle button             { font-size: 13px; padding: 6px 16px; }
-  .lb                                 { font-size: 13px; padding: 6px 15px; }
-  .log-month-badge                    { font-size: 12px; }
+  .log-view-toggle button             { font-size: 15px; padding: 7px 18px; }
+  .lb                                 { font-size: 15px; padding: 7px 16px; }
+  .log-month-badge                    { font-size: 14px; }
   #log-body                           { padding: 20px 22px 40px; }
-  .log-empty                          { font-size: 15px; }
-  .log-empty-icon                     { font-size: 40px; }
-  .log-entry-date                     { font-size: 14px; min-width: 108px; }
-  .log-entry-time                     { font-size: 13px; }
-  .obj-chip                           { font-size: 12px; padding: 2px 8px; }
-  .log-entry-actions button           { font-size: 12px; padding: 4px 10px; }
-  .log-entry-notes                    { font-size: 14px; }
-  .log-entry-meta-row                 { font-size: 13px; gap: 22px; }
-  .cond-pip span                      { width: 8px; height: 8px; }
+  .log-empty                          { font-size: 18px; }
+  .log-empty-icon                     { font-size: 44px; }
+  .log-entry-date                     { font-size: 17px; min-width: 120px; }
+  .log-entry-time                     { font-size: 15px; }
+  .obj-chip                           { font-size: 14px; padding: 3px 9px; }
+  .log-entry-actions button           { font-size: 14px; padding: 5px 12px; }
+  .log-entry-notes                    { font-size: 17px; }
+  .log-entry-meta-row                 { font-size: 15px; gap: 22px; }
+  .cond-pip span                      { width: 9px; height: 9px; }
   /* modal */
-  .modal-header h4                    { font-size: 16px; }
-  .modal-privacy                      { font-size: 12px; margin-bottom: 20px; padding: 9px 12px; }
-  .modal-privacy .pn-lock             { font-size: 13px; }
-  .f-label                            { font-size: 12px; }
-  .f-input                            { font-size: 15px; padding: 9px 13px; }
-  .f-star                             { width: 42px; height: 42px; font-size: 15px; }
-  .f-chip                             { font-size: 13px; padding: 4px 10px; }
-  .f-dd-item                          { font-size: 14px; padding: 10px 14px; }
-  .f-dd-item .dd-type                 { font-size: 12px; }
-  .f-dd-cat                           { font-size: 11px; }
+  .modal-header h4                    { font-size: 19px; }
+  .modal-privacy                      { font-size: 14px; margin-bottom: 20px; padding: 9px 12px; }
+  .modal-privacy .pn-lock             { font-size: 15px; }
+  .f-label                            { font-size: 14px; }
+  .f-input                            { font-size: 17px; padding: 11px 14px; }
+  .f-star                             { width: 46px; height: 46px; font-size: 17px; }
+  .f-chip                             { font-size: 15px; padding: 5px 12px; }
+  .f-dd-item                          { font-size: 16px; padding: 11px 15px; }
+  .f-dd-item .dd-type                 { font-size: 13px; }
+  .f-dd-cat                           { font-size: 13px; }
 }
 `;
 
@@ -416,11 +426,13 @@ function buildDOM() {
 
       <div class="f-field f-cond-row">
         <div>
-          <div class="f-label">Seeing &nbsp;1 = poor · 5 = perfect</div>
+          <div class="f-label">Seeing</div>
+          <div class="f-label-sub">1 = poor &nbsp;·&nbsp; 5 = perfect</div>
           <div class="f-stars" id="f-seeing"></div>
         </div>
         <div>
-          <div class="f-label">Transparency &nbsp;1 = hazy · 5 = crystal</div>
+          <div class="f-label">Transparency</div>
+          <div class="f-label-sub">1 = hazy &nbsp;·&nbsp; 5 = crystal</div>
           <div class="f-stars" id="f-transp"></div>
         </div>
       </div>
