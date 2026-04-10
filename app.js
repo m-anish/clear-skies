@@ -399,6 +399,9 @@ function goTo(idx) {
 }
 
 document.addEventListener('keydown', e => {
+  // Don't intercept navigation keys while the user is typing in a form field
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
   if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
   else if (e.key === 'ArrowLeft')              { e.preventDefault(); goTo(current - 1); }
 });
