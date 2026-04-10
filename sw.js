@@ -12,6 +12,7 @@ const ASSETS = [
   './objects-db.js',
   './log.js',
   './log-ui.js',
+  './favicon.svg',
   './icon-192.png',
   './icon-512.png'
   // data-[month]-[year].js files are NOT precached here —
