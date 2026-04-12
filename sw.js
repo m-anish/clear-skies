@@ -1,4 +1,4 @@
-const CACHE = 'clear-skies-v5';
+const CACHE = 'clear-skies-v6';
 
 const ASSETS = [
   './',
@@ -12,6 +12,7 @@ const ASSETS = [
   './objects-db.js',
   './log.js',
   './log-ui.js',
+  './print-link.js',
   './favicon.svg',
   './icon-192.png',
   './icon-512.png'
