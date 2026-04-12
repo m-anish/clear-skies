@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clear Skies — Print Edition</title>
+  <link rel="stylesheet" href="print.css"/>
+  <!--
+    Paged.js is loaded dynamically AFTER renderZine() builds the DOM.
+    Loading it in <head> causes a race condition where Paged.js processes
+    an empty #zine-root before content is injected.
+    See: README-print.md for setup instructions.
+  -->
+</head>
+<body>
+
+  <div id="zine-root">
+    <p style="font-family:sans-serif;color:#888;padding:2em;">
+      Loading Clear Skies print data…
+    </p>
+  </div>
+
+  <!-- Static registry files (same order as index.html) -->
+  <script src="sketches.js"></script>
+  <script src="constellations.js"></script>
+  <script src="quotes.js"></script>
+  <script src="objects-db.js"></script>
+
+  <!--
+    Data file is injected dynamically from the ?data=month-year URL param.
+    When opened directly in a browser without a param, falls back to april-2026.
+    The Puppeteer script passes: ?data=april-2026
+  -->
+  <script>
+  (function () {
+    'use strict';
+    var params  = new URLSearchParams(window.location.search);
+    var dataKey = params.get('data') || 'april-2026';
+    var src     = './data-' + dataKey + '.js';
+    document.write('<script src="' + src + '"><\/script>');
+  })();
+  </script>
+
+  <!-- ── Main render script ─────────────────────────────────────────────── -->
+  <script>
+  (function () {
+    'use strict';
+
+    // ────────────────────────────────────────────────────────────────────────
+    // SVG Sketch Inversion — Option B (light background, dark marks)
+    //
+    // FIX: use placeholder __BG__ for backgrounds FIRST, then do all colour
+    // replacements, then convert __BG__ → white at the very end. This prevents
+    // the background→white being re-captured by the fill="#ffffff"→dark rule.
+    // ────────────────────────────────────────────────────────────────────────
+    function invertSketchForPrint(svgInner) {
+      var s = svgInner;
+
+      // ── Remove existing faint white border circle (invisible on white paper) ─
+      s = s.replace(/<circle cx="70" cy="70" r="62" fill="none" stroke="#fff"[^\/]*\/>/g, '');
+
+      // ── Step 1: Background fills → placeholder (protected from star rules) ──
+      s = s.replace(/fill="#0a0a14"/g, 'fill="__BG__"');
+      s = s.replace(/fill="#0c0c18"/g, 'fill="__BG__"');
+      s = s.replace(/fill="#1a1a30"/g, 'fill="__BG__"');
+      s = s.replace(/fill="#0d0d20"/g, 'fill="__BG__"');
+      // Also the outer gutter circle (r=66)
+      s = s.replace(/r="66" fill="#0a0a14"/g, 'r="66" fill="__BG__"');
+
+      // ── Step 2: Star fills (white/near-white) → near-black ──────────────────
+      // Most specific hex values first to avoid cascading double-replacements
+      s = s.replace(/fill="#fff8e0"/g,  'fill="#2a1a00"');
+      s = s.replace(/fill="#ffe8c0"/g,  'fill="#2a1800"');
+      s = s.replace(/fill="#fff0c0"/g,  'fill="#2a1a00"');
+      s = s.replace(/fill="#e0e0ff"/g,  'fill="#00001a"');
+      s = s.replace(/fill="#e0f0ff"/g,  'fill="#00101a"');
+      // Generic white last (catches remaining #ffffff and #fff)
+      s = s.replace(/fill="#ffffff"/g,  'fill="#1a1a2a"');
+      s = s.replace(/fill="#fff"/g,     'fill="#1a1a2a"');
+
+      // ── Step 3: rgba(255,255,255,N) nebulosity → dark ─────────────────────
+      s = s.replace(/fill="rgba\(255,255,255,([^)]+)\)"/g, 'fill="rgba(26,26,42,$1)"');
+      s = s.replace(/fill="rgba\(64,192,160,([^)]+)\)"/g,  'fill="rgba(0,80,60,$1)"');
+
+      // ── Step 4: Nebula / glow fills → desaturated equivalents ───────────────
+      s = s.replace(/fill="#3a3060"/g,  'fill="#c8c8d0"');
+      s = s.replace(/fill="#5040a0"/g,  'fill="#b0b0c0"');
+      s = s.replace(/fill="#4838a0"/g,  'fill="#b8b8c8"');
+      s = s.replace(/fill="#7868c8"/g,  'fill="#909098"');
+      s = s.replace(/fill="#c0b0f0"/g,  'fill="#707078"');
+      s = s.replace(/fill="#6060a0"/g,  'fill="#b0b0b8"');
+      s = s.replace(/fill="#3a3a5c"/g,  'fill="#cccccc"');
+      s = s.replace(/fill="#c0c0e8"/g,  'fill="#888890"');
+      s = s.replace(/fill="#4a4a7a"/g,  'fill="#c0c0c8"');
+      s = s.replace(/fill="#7070a8"/g,  'fill="#a0a0a8"');
+      s = s.replace(/fill="#a8a8cc"/g,  'fill="#787880"');
+      s = s.replace(/fill="#2a2a50"/g,  'fill="#d0d0d8"');
+      s = s.replace(/fill="#4444a0"/g,  'fill="#b8b8c0"');
+      s = s.replace(/fill="#8080c8"/g,  'fill="#909098"');
+      s = s.replace(/fill="#2a2a48"/g,  'fill="#d4d4dc"');
+      s = s.replace(/fill="#5858a0"/g,  'fill="#b0b0b8"');
+      s = s.replace(/fill="#ccccee"/g,  'fill="#686870"');
+      s = s.replace(/fill="#8888bb"/g,  'fill="#909098"');
+      s = s.replace(/fill="#f0b830"/g,  'fill="#1a1200"');
+      s = s.replace(/fill="#f0c060"/g,  'fill="#1a1400"');
+      s = s.replace(/fill="#a0c0ff"/g,  'fill="#001428"');
+      s = s.replace(/fill="#e8b040"/g,  'fill="#1a1000"');
+      s = s.replace(/fill="#e8b848"/g,  'fill="#181000"');
+      s = s.replace(/fill="#90b0d8"/g,  'fill="#8090a0"');
+      s = s.replace(/fill="#3a4a70"/g,  'fill="#c0c8d0"');
+      s = s.replace(/fill="#3a5080"/g,  'fill="#b8c0c8"');
+      s = s.replace(/fill="#3a3a6a"/g,  'fill="#c8c8d4"');
+      s = s.replace(/fill="#aaaacc"/g,  'fill="#707078"');
+      s = s.replace(/fill="#1a1a2e"/g,  'fill="#444454"'); // M64 dark lane
+
+      // ── Step 5: Stroke colours → dark ────────────────────────────────────
+      s = s.replace(/stroke="#7090c0"/g, 'stroke="#4060a0"');
+      s = s.replace(/stroke="#90b0d8"/g, 'stroke="#5070a0"');
+      s = s.replace(/stroke="#e8a820"/g, 'stroke="#1a1000"');
+      s = s.replace(/stroke="#90b8ff"/g, 'stroke="#002040"');
+      s = s.replace(/stroke="#7070b0"/g, 'stroke="#303060"');
+      s = s.replace(/stroke="#e8b040"/g, 'stroke="#1a1000"');
+
+      // ── Step 6: Resolve placeholder → white ──────────────────────────────
+      s = s.replace(/fill="__BG__"/g, 'fill="#ffffff"');
+
+      // ── Step 7: Add visible grey border circle ────────────────────────────
+      s = '<circle cx="70" cy="70" r="63" fill="none" stroke="#888888" stroke-width="1.5"/>' + s;
+
+      return s;
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Moon phase SVG renderer — replaces emoji for reliable print output.
+    // Emoji rendering in headless Chromium depends on system fonts (often
+    // missing on CI). SVG is 100% reliable.
+    // ────────────────────────────────────────────────────────────────────────
+    var _mIdx = 0;
+    function moonPhaseSvg(emoji, sizePx) {
+      sizePx = sizePx || 16;
+      var id   = 'mp' + (++_mIdx);
+      var lit  = '#d8c870';   // warm gold-cream for lit portion
+      var dark = '#2a2840';   // deep blue-grey for dark side
+      var rim  = '#999999';
+      var cls  = 'mp-svg';
+
+      function wrap(body) {
+        return '<svg class="' + cls + '" xmlns="http://www.w3.org/2000/svg"'
+             + ' viewBox="0 0 16 16" width="' + sizePx + '" height="' + sizePx + '"'
+             + ' style="vertical-align:middle;display:inline-block">'
+             + body
+             + '<circle cx="8" cy="8" r="7" fill="none" stroke="' + rim + '" stroke-width="0.5"/>'
+             + '</svg>';
+      }
+
+      // Arc path helpers (cx=8, cy=8, r=7)
+      // Right semicircle outer: M8,1 A7,7 0 0 1 8,15
+      // Left  semicircle outer: M8,1 A7,7 0 0 0 8,15
+      // Inner ellipse right (narrow): A4,7 0 0 0 8,1
+      // Inner ellipse left  (narrow): A4,7 0 0 1 8,1
+      // Inner ellipse right (wide gibbous): A2.5,7 0 0 0 8,1
+      // Inner ellipse left  (wide gibbous): A2.5,7 0 0 1 8,1
+
+      switch(emoji) {
+
+        case '🌑': // New moon — fully dark
+          return wrap('<circle cx="8" cy="8" r="7" fill="' + dark + '"/>');
+
+        case '🌕': // Full moon — fully lit
+          return wrap('<circle cx="8" cy="8" r="7" fill="' + lit + '"/>');
+
+        case '🌓': // First quarter — right half lit
+          return wrap(
+            '<circle cx="8" cy="8" r="7" fill="' + dark + '"/>'
+            + '<path d="M8,1 A7,7 0 0 1 8,15 Z" fill="' + lit + '"/>'
+          );
+
+        case '🌗': // Last quarter — left half lit
+          return wrap(
+            '<circle cx="8" cy="8" r="7" fill="' + dark + '"/>'
+            + '<path d="M8,1 A7,7 0 0 0 8,15 Z" fill="' + lit + '"/>'
+          );
+
+        case '🌒': // Waxing crescent — thin right crescent
+          return wrap(
+            '<circle cx="8" cy="8" r="7" fill="' + dark + '"/>'
+            + '<path d="M8,1 A7,7 0 0 1 8,15 A4,7 0 0 0 8,1 Z" fill="' + lit + '"/>'
+          );
+
+        case '🌘': // Waning crescent — thin left crescent
+          return wrap(
+            '<circle cx="8" cy="8" r="7" fill="' + dark + '"/>'
+            + '<path d="M8,1 A7,7 0 0 0 8,15 A4,7 0 0 1 8,1 Z" fill="' + lit + '"/>'
+          );
+
+        case '🌔': // Waxing gibbous — mostly lit, dark left sliver
+          return wrap(
+            '<circle cx="8" cy="8" r="7" fill="' + lit + '"/>'
+            + '<path d="M8,1 A7,7 0 0 0 8,15 A2.5,7 0 0 1 8,1 Z" fill="' + dark + '"/>'
+          );
+
+        case '🌖': // Waning gibbous — mostly lit, dark right sliver
+          return wrap(
+            '<circle cx="8" cy="8" r="7" fill="' + lit + '"/>'
+            + '<path d="M8,1 A7,7 0 0 1 8,15 A2.5,7 0 0 0 8,1 Z" fill="' + dark + '"/>'
+          );
+
+        default:
+          return wrap('<circle cx="8" cy="8" r="7" fill="#cccccc"/>');
+      }
+    }
+
+    // Tiny dot used in moon-quarter legend line (replaces emoji)
+    function moonDot(emoji) {
+      return moonPhaseSvg(emoji, 11);
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Helper — ease stars
+    // ────────────────────────────────────────────────────────────────────────
+    function easeStars(ease) {
+      var html = '<span class="ease-row">';
+      for (var i = 1; i <= 5; i++) {
+        html += i <= ease ? '<span class="sf-p"></span>' : '<span class="se-p"></span>';
+      }
+      return html + '</span>';
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Helper — sketch SVG
+    // ────────────────────────────────────────────────────────────────────────
+    function renderSketch(svgId) {
+      var raw = window.SKY_SKETCHES && window.SKY_SKETCHES[svgId];
+      var inner;
+      if (raw) {
+        inner = invertSketchForPrint(raw);
+      } else {
+        console.warn('[print.html] Missing sketch:', svgId, '— add to sketches.js');
+        inner = '<circle cx="70" cy="70" r="63" fill="#ffffff" stroke="#888" stroke-width="1.5"/>'
+              + '<circle cx="70" cy="70" r="3" fill="#1a1a2a"/>'
+              + '<text x="70" y="85" text-anchor="middle" font-family="Helvetica Neue, Arial" font-size="9" fill="#999">sketch pending</text>';
+      }
+      return '<svg class="sketch-svg" width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">'
+           + inner + '</svg>';
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Season → light background tint for cover
+    // ────────────────────────────────────────────────────────────────────────
+    var SEASON_COVER_BG = {
+      spring: '#f4eedf',   // warm ivory-gold
+      summer: '#e6f0eb',   // pale sage-green
+      autumn: '#f4e8df',   // warm terracotta cream
+      winter: '#e6ecf4',   // cool silver-blue
+    };
+    var SEASON_COVER_ACCENT = {
+      spring: '#6a4a10',   // deep gold
+      summer: '#144a30',   // forest green
+      autumn: '#6a2010',   // burnt sienna
+      winter: '#102060',   // midnight blue
+    };
+    var SEASON_COVER_TITLE = {
+      spring: '#8a5c18',
+      summer: '#1a6040',
+      autumn: '#8a3018',
+      winter: '#1a3080',
+    };
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Page builders
+    // ────────────────────────────────────────────────────────────────────────
+
+    function buildCover(d) {
+      var season  = (d.season || 'spring').toLowerCase();
+      var bgColor = SEASON_COVER_BG[season]     || '#f4eedf';
+      var accent  = SEASON_COVER_ACCENT[season] || '#6a4a10';
+      var titleAccent = SEASON_COVER_TITLE[season] || '#8a5c18';
+
+      var constSvg = '';
+      if (window.SKY_CONSTELLATIONS && window.SKY_CONSTELLATIONS[d.coverConstellation]) {
+        // Use accent colour at very low opacity as the constellation watermark
+        constSvg = '<svg class="cover-constellation-bg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"'
+                 + ' style="color:' + accent + ';opacity:0.12">'
+                 + window.SKY_CONSTELLATIONS[d.coverConstellation]
+                 + '</svg>';
+      }
+
+      var quote = window.SKY_QUOTE || { q: '', a: '' };
+
+      // QR code injected by generate-pdf.js via page.evaluateOnNewDocument
+      var qrSvg = (typeof window.SKY_QR_SVG === 'string') ? window.SKY_QR_SVG : '';
+      // Strip the <?xml ...> declaration if present so SVG embeds cleanly inline
+      qrSvg = qrSvg.replace(/<\?xml[^?]*\?>/gi, '').trim();
+
+      return '<div class="page cover-page" style="background:' + bgColor + ';color:#1a1a2a">'
+           + constSvg
+           + '<div class="cover-content">'
+           + '  <div class="cover-season-label" style="color:' + accent + '">' + (d.season || 'spring').toUpperCase() + '</div>'
+           + '  <div class="cover-year-p" style="color:' + accent + '">' + d.year + '</div>'
+           + '  <h1 class="cover-title-p">' + d.month + ' <em style="color:' + titleAccent + '">' + (d.titleItalic || 'Skies') + '</em></h1>'
+           + '  <p class="cover-subtitle-p">Northern Hemisphere</p>'
+           + (qrSvg
+              ? '<div class="cover-qr-wrap">'
+              + qrSvg
+              + '<div class="cover-qr-label">clearskies.starstucklab.com</div>'
+              + '</div>'
+              : '')
+           + (quote.q
+              ? '<div class="cover-quote-block-p" style="border-top-color:' + accent + '40">'
+              + '<em class="cq-text-p">"' + quote.q + '"</em>'
+              + '<span class="cq-attr-p">— ' + quote.a + '</span>'
+              + '</div>'
+              : '')
+           + '</div>'
+           + '</div>';
+    }
+
+    function buildPlanner(d) {
+      var rows = '';
+      (d.planner || []).forEach(function(row) {
+        var cls = row.type === 'best' ? ' row-best' : row.type === 'warn' ? ' row-warn' : '';
+        rows += '<tr class="' + cls + '">'
+              + '<td>' + row.dates   + '</td>'
+              + '<td>' + row.targets + '</td>'
+              + '<td>' + row.time    + '</td>'
+              + '<td>' + row.note    + '</td>'
+              + '</tr>';
+      });
+
+      // Moon quarter summary line — use SVG dots instead of emoji
+      var moonEvts = d.moonEvents || {};
+      var moonLine = [
+        moonEvts.full    ? moonDot('🌕') + ' Full: '      + moonEvts.full    : '',
+        moonEvts.lastQtr ? moonDot('🌗') + ' Last Qtr: '  + moonEvts.lastQtr : '',
+        moonEvts.newMoon ? moonDot('🌑') + ' New: '       + moonEvts.newMoon : '',
+        moonEvts.firstQtr? moonDot('🌓') + ' First Qtr: ' + moonEvts.firstQtr: '',
+      ].filter(Boolean).join(' &nbsp;·&nbsp; ');
+
+      return '<div class="page planner-page">'
+           + '<h2 class="page-title">Sky Planner — ' + d.month + ' ' + d.year + '</h2>'
+           + (moonLine ? '<p class="planner-moon-line">' + moonLine + '</p>' : '')
+           + '<div class="planner-table-wrap">'
+           + '<table class="planner-table">'
+           + '<thead><tr><th>Dates</th><th>Best targets</th><th>Best time</th><th>Note</th></tr></thead>'
+           + '<tbody>' + rows + '</tbody>'
+           + '</table>'
+           + '</div>'
+           + (d.plannerFooter ? '<p class="planner-footer">' + d.plannerFooter + '</p>' : '')
+           + '</div>';
+    }
+
+    function buildMoon(d) {
+      var phases = d.moonPhases || [];
+      var cells  = '';
+      phases.forEach(function(emoji, i) {
+        var dayNum = i + 1;
+        var isNew  = dayNum === d.newMoonDay;
+        cells += '<div class="phase-cell' + (isNew ? ' new-moon' : '') + '">'
+               + '<span class="phase-dn">' + dayNum + '</span>'
+               + moonPhaseSvg(emoji, 20)
+               + '</div>';
+      });
+
+      var moonEvts = d.moonEvents || {};
+      var moonSummary = [
+        moonEvts.full    ? moonDot('🌕') + ' Full — '      + moonEvts.full    : '',
+        moonEvts.lastQtr ? moonDot('🌗') + ' Last Qtr — '  + moonEvts.lastQtr : '',
+        moonEvts.newMoon ? moonDot('🌑') + ' New Moon — '  + moonEvts.newMoon : '',
+        moonEvts.firstQtr? moonDot('🌓') + ' First Qtr — ' + moonEvts.firstQtr: '',
+      ].filter(Boolean).join(' &nbsp; ');
+
+      var features = '';
+      (d.moonFeatures || []).forEach(function(f) {
+        features += '<div class="feat-card-p">'
+                  + '<h4>' + f.name + '</h4>'
+                  + '<p>' + f.desc + '</p>'
+                  + '<div class="feat-best">' + f.best + '</div>'
+                  + '</div>';
+      });
+
+      return '<div class="page moon-page">'
+           + '<h2 class="page-title">The Moon — ' + d.month + ' ' + d.year + '</h2>'
+           + '<div class="phase-grid">' + cells + '</div>'
+           + (moonSummary ? '<div class="moon-quarters">' + moonSummary + '</div>' : '')
+           + '<div class="feat-grid">' + features + '</div>'
+           + '</div>';
+    }
+
+    function buildPlanets(d) {
+      var planets = '';
+      (d.planets || []).forEach(function(p) {
+        var rows = '';
+        (p.rows || []).forEach(function(r) {
+          rows += '<div class="p-row"><span class="p-lbl">' + r[0] + '</span><span class="p-val">' + r[1] + '</span></div>';
+        });
+        planets += '<div class="planet-card">'
+                 + '<div class="planet-card-head"><h3>' + p.name + '</h3>' + easeStars(p.ease) + '</div>'
+                 + rows
+                 + (p.note ? '<div class="planet-note">' + p.note + '</div>' : '')
+                 + '</div>';
+      });
+
+      // Overflow prevention: limit to 3 events in print (rest visible in PWA)
+      var eventsData = (d.events || []).slice(0, 3);
+      var events = '';
+      eventsData.forEach(function(ev) {
+        var cls = ev.type === 'warn' ? ' ev-warn' : '';
+        events += '<div class="event-card' + cls + '">'
+                + '<div class="ev-title">' + ev.title + '</div>'
+                + '<div class="ev-body">' + ev.body + '</div>'
+                + '</div>';
+      });
+      if ((d.events || []).length > 3) {
+        events += '<div class="ev-more">+ ' + ((d.events.length - 3)) + ' more events — see full guide online</div>';
+      }
+
+      return '<div class="page planets-page">'
+           + '<h2 class="page-title">Planets &amp; Events — ' + d.month + ' ' + d.year + '</h2>'
+           + '<div class="planets-grid">' + planets + '</div>'
+           + (events ? '<div class="events-list">' + events + '</div>' : '')
+           + '</div>';
+    }
+
+    function buildObject(obj) {
+      var metaHtml = '';
+      (obj.meta || []).forEach(function(m) {
+        metaHtml += '<div class="obj-meta-item-p">'
+                  + '<div class="obj-mk">' + m[0] + '</div>'
+                  + '<div class="obj-mv">' + m[1] + '</div>'
+                  + '</div>';
+      });
+
+      var sketchHtml = '';
+      if (obj.twoSketch && obj.sketches && obj.sketches.length >= 2) {
+        sketchHtml = '<div class="two-sketch-row-p">';
+        obj.sketches.forEach(function(sk) {
+          sketchHtml += '<div class="sketch-cell">'
+                      + renderSketch(sk.svgId)
+                      + '<div class="sketch-lbl-p">' + (sk.label || '').replace(/\n/g, '<br/>') + '</div>'
+                      + '</div>';
+        });
+        sketchHtml += '</div>';
+      } else if (obj.sketches && obj.sketches.length > 0) {
+        var sk = obj.sketches[0];
+        sketchHtml = '<div class="single-sketch">'
+                   + renderSketch(sk.svgId)
+                   + '<div class="sketch-lbl-p">' + (sk.label || '').replace(/\n/g, '<br/>') + '</div>'
+                   + '</div>';
+      }
+
+      return '<div class="page object-page">'
+           + '<div class="obj-head-p">'
+           + '<div class="obj-name-p">' + obj.name + '</div>'
+           + '<div class="obj-type-p">' + obj.type + '</div>'
+           + '<div class="obj-ease-row">' + easeStars(obj.ease) + '<span class="ease-label-p">observing ease</span></div>'
+           + '</div>'
+           + (obj.warning ? '<div class="obj-warning">' + obj.warning + '</div>' : '')
+           + '<div class="obj-meta-grid">' + metaHtml + '</div>'
+           + '<div class="obj-body-p' + (obj.twoSketch ? ' is-two-sketch' : '') + '">'
+           + '<div class="obj-desc-p">'
+           + '<div class="obj-section-label">Description</div>'
+           + '<p>' + obj.description + '</p>'
+           + '</div>'
+           + (obj.twoSketch ? '' : sketchHtml)
+           + '</div>'
+           + (obj.twoSketch ? sketchHtml : '')
+           + '<div class="obj-finder-p">'
+           + '<div class="obj-section-label">Finder</div>'
+           + '<p>' + obj.finder + '</p>'
+           + '</div>'
+           + '</div>';
+    }
+
+    function buildConditions(d) {
+      return '<div class="page conditions-page">'
+           + '<h2 class="page-title">Observing Conditions</h2>'
+           + '<div class="cond-grid-p">'
+           + '<div class="cond-box-p"><h4>Seeing (steadiness)</h4>'
+           + '<p>Poor seeing makes stars shimmer and prevents double-star splits. Good seeing gives steady, sharp images. Seeing varies nightly — try a different night if stars are boiling.</p></div>'
+           + '<div class="cond-box-p"><h4>Transparency (clarity)</h4>'
+           + '<p>High transparency means dry, dust-free air. Low transparency hides faint galaxies. Haze and humidity are the enemy of faint objects.</p></div>'
+           + '<div class="cond-box-p"><h4>Dark adaptation</h4>'
+           + '<p>Your eyes need ~20 minutes in full darkness to reach peak sensitivity. One bright light flash resets the process. Use red light only in the field.</p></div>'
+           + '<div class="cond-box-p"><h4>Light pollution</h4>'
+           + '<p>Bortle 1–4 skies reveal galaxy detail and faint nebulosity. The Moon is the single biggest factor night-to-night.</p></div>'
+           + '</div>'
+           + '<div class="checklist-title">Pre-session checklist</div>'
+           + '<ul class="checklist-p">'
+           + '<li><span class="chk-p">☐</span> Check seeing/transparency forecast (Clear Outside · Meteoblue)</li>'
+           + '<li><span class="chk-p">☐</span> Dark sky window: <strong>' + (d.darkSkyWindow || '') + '</strong></li>'
+           + '<li><span class="chk-p">☐</span> Cool telescope ≥20 min before observing</li>'
+           + '<li><span class="chk-p">☐</span> Collimate if last session was ≥2 weeks ago</li>'
+           + '<li><span class="chk-p">☐</span> Always start at 25mm (' + (d.scope && d.scope.eyepieces[0] ? d.scope.eyepieces[0].mag : 36) + '×) — low-power first</li>'
+           + '<li><span class="chk-p">☐</span> Switch to 9mm (' + (d.scope && d.scope.eyepieces[1] ? d.scope.eyepieces[1].mag : 100) + '×) only after locating target</li>'
+           + '<li><span class="chk-p">☐</span> 20 min dark adaptation before faint objects</li>'
+           + '<li><span class="chk-p">☐</span> Use averted vision for galaxies and faint nebulae</li>'
+           + '</ul>'
+           + '</div>';
+    }
+
+    function buildGlossary(d) {
+      var terms = '';
+      (d.glossary || []).forEach(function(g) {
+        terms += '<div class="gloss-item-p">'
+               + '<div class="gloss-term-p">' + g[0] + '</div>'
+               + '<div class="gloss-def-p">'  + g[1] + '</div>'
+               + '</div>';
+      });
+
+      var quote = window.SKY_QUOTE || { q: '', a: '' };
+      var cr    = d.credits || {};
+
+      return '<div class="page glossary-page">'
+           + '<h2 class="page-title">Glossary</h2>'
+           + '<div class="gloss-grid-p">' + terms + '</div>'
+           + (d.scopeLimitNote ? '<div class="scope-limit-box">' + d.scopeLimitNote + '</div>' : '')
+           + '<div class="credits-section">'
+           + '<div class="credits-label">Clear Skies — ' + d.month + ' ' + d.year + '</div>'
+           + '<div class="credits-author">' + (cr.author || '') + '</div>'
+           + (cr.contributors && cr.contributors.length
+              ? '<div class="credits-contrib">With thanks to: ' + cr.contributors.join(', ') + '</div>' : '')
+           + (d.scope ? '<div class="credits-scope">114mm f/7.9 Newtonian · 900mm focal length · 25mm (36×) &amp; 9mm (100×)</div>' : '')
+           + '</div>'
+           + (quote.q ? '<div class="close-quote"><em>"' + quote.q + '"</em><span> — ' + quote.a + '</span></div>' : '')
+           + '</div>';
+    }
+
+    // Notes page — blank ruled lines for field writing
+    // Keeps page count at multiple-of-4 for saddle-stitch binding
+    function buildNotes() {
+      var lines = '';
+      for (var i = 0; i < 18; i++) lines += '<div class="ruled-line"></div>';
+      return '<div class="page notes-page">'
+           + '<h2 class="page-title">My Notes</h2>'
+           + '<div class="ruled-area">' + lines + '</div>'
+           + '</div>';
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // renderZine — entry point
+    // ────────────────────────────────────────────────────────────────────────
+    function renderZine() {
+      var d = window.SKY_DATA;
+      if (!d) {
+        var el = document.getElementById('zine-root');
+        if (el) el.innerHTML = '<p style="color:red;font-family:sans-serif;padding:2em;">ERROR: SKY_DATA not loaded.</p>';
+        return;
+      }
+
+      var html = '';
+      html += buildCover(d);
+      html += buildPlanner(d);
+      html += buildMoon(d);
+      html += buildPlanets(d);
+      (d.objects || []).forEach(function(obj) { html += buildObject(obj); });
+      html += buildConditions(d);
+      html += buildGlossary(d);
+      html += buildNotes(); // Page 14 — saddle-stitch multiple of 4
+
+      document.getElementById('zine-root').innerHTML = html;
+      console.log('[print.html] renderZine() complete — ' + document.querySelectorAll('.page').length + ' pages built.');
+    }
+
+    // ── Load Paged.js dynamically AFTER content is built ─────────────────────
+    function loadPagedJs() {
+      var script   = document.createElement('script');
+      script.src   = 'vendor/paged.polyfill.js';
+      script.async = false;
+      document.body.appendChild(script);
+      console.log('[print.html] Paged.js injected — awaiting layout…');
+    }
+
+    function init() {
+      renderZine();
+      loadPagedJs();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .github/workflows/generate-pdf.yml
+# Automatically generates a Clear Skies PDF whenever a new data-*.js file
+# is pushed to main.
+#
+# Trigger: push to main with changes to any data-*.js file
+# Output:  GitHub Actions artifact named clear-skies-[month]-[year]-pdf
+#
+# Optional: uncomment the "Commit PDF to repo" step to push the PDF
+#           into the output/ directory automatically.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Generate Clear Skies PDF
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data-*.js'
+
+jobs:
+  generate-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Check out the repository ────────────────────────────────────────
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # Need 2 commits to diff for changed file detection
+
+      # ── 2. Set up Node.js 20 ───────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ── 3. Install dependencies (Puppeteer + Paged.js) ─────────────────────
+      - name: Install dependencies
+        run: |
+          cd scripts
+          npm install
+
+      # ── 4. Copy Paged.js to vendor/ ────────────────────────────────────────
+      - name: Copy Paged.js to vendor/
+        run: |
+          cd scripts
+          npm run copy-pagedjs
+
+      # ── 5. Detect which data file changed and extract month/year ───────────
+      - name: Detect changed data file
+        id: detect
+        run: |
+          # Find the data-*.js file that was added or modified in this push
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'data-*.js' | head -1)
+
+          if [ -z "$CHANGED" ]; then
+            echo "No data-*.js file found in diff. Trying untracked files…"
+            CHANGED=$(git show --stat HEAD | grep 'data-.*\.js' | awk '{print $1}' | head -1)
+          fi
+
+          if [ -z "$CHANGED" ]; then
+            echo "ERROR: Could not detect changed data file."
+            exit 1
+          fi
+
+          echo "Detected changed file: $CHANGED"
+
+          # Parse month and year from filename: data-april-2026.js
+          BASENAME=$(basename "$CHANGED" .js)         # data-april-2026
+          MONTH=$(echo "$BASENAME" | cut -d'-' -f2)   # april
+          YEAR=$(echo "$BASENAME"  | cut -d'-' -f3)   # 2026
+
+          echo "Month: $MONTH"
+          echo "Year:  $YEAR"
+
+          # Export as step outputs
+          echo "month=$MONTH" >> "$GITHUB_OUTPUT"
+          echo "year=$YEAR"   >> "$GITHUB_OUTPUT"
+          echo "slug=${MONTH}-${YEAR}" >> "$GITHUB_OUTPUT"
+
+      # ── 6. Generate the PDF ────────────────────────────────────────────────
+      - name: Generate PDF
+        run: |
+          node scripts/generate-pdf.js \
+            --month "${{ steps.detect.outputs.month }}" \
+            --year  "${{ steps.detect.outputs.year }}"
+
+      # ── 7. Upload PDF as artifact ──────────────────────────────────────────
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: clear-skies-${{ steps.detect.outputs.slug }}-pdf
+          path: output/clear-skies-${{ steps.detect.outputs.slug }}.pdf
+          retention-days: 90
+          if-no-files-found: error
+
+      # ── 8. (Optional) Commit PDF back to the repository ───────────────────
+      # Uncomment this step to automatically push the generated PDF
+      # into the output/ directory on the main branch.
+      # Make sure the workflow has write permissions in repo Settings →
+      # Actions → General → Workflow permissions → "Read and write permissions"
+      #
+      # - name: Commit PDF to repo
+      #   run: |
+      #     git config user.name  "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git add output/clear-skies-${{ steps.detect.outputs.slug }}.pdf
+      #     git commit -m "chore: add PDF for ${{ steps.detect.outputs.month }} ${{ steps.detect.outputs.year }} [skip ci]" \
+      #       || echo "Nothing to commit"
+      #     git push
