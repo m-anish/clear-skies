@@ -1,0 +1,16 @@
+{
+  "name": "clear-skies-print",
+  "version": "1.0.0",
+  "description": "PDF generation for Clear Skies zine using Puppeteer + Paged.js",
+  "scripts": {
+    "pdf": "node generate-pdf.js",
+    "pdf:april": "node generate-pdf.js --month april --year 2026",
+    "pdf:may": "node generate-pdf.js --month may --year 2026",
+    "copy-pagedjs": "node -e \"const fs=require('fs');const src='node_modules/pagedjs/dist/paged.polyfill.js';const dst='../vendor/paged.polyfill.js';fs.mkdirSync('../vendor',{recursive:true});fs.copyFileSync(src,dst);console.log('Copied paged.polyfill.js to vendor/');\""
+  },
+  "dependencies": {
+    "pagedjs": "^0.4.3",
+    "puppeteer": "^22.0.0",
+    "qrcode": "^1.5.4"
+  }
+}

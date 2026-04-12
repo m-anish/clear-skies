@@ -445,3 +445,21 @@ Edit `objects-db.js`. Append to the relevant section:
 ---
 
 *Last updated: April 2026*
+
+---
+
+## 16. Print Pipeline
+
+New files added April 2026 — do not modify existing files. See `README-print.md` for full setup and usage instructions.
+
+| File | Purpose |
+|---|---|
+| `print.html` | Standalone Paged.js renderer — reads `?data=month-year`, builds 14-page zine HTML, runs `invertSketchForPrint()` on all SVG sketches |
+| `print.css` | A5 print styles — warm off-white background, darkened accent colours, Paged.js `@page` rules |
+| `vendor/paged.polyfill.js` | Local Paged.js bundle (copied from `scripts/node_modules/pagedjs`) — required for `file://` URL compatibility |
+| `scripts/generate-pdf.js` | Puppeteer script: launches Chromium, waits for `.pagedjs_pages`, exports A5 PDF to `output/` |
+| `scripts/package.json` | `puppeteer` + `pagedjs` dependencies; `copy-pagedjs` script populates `vendor/` |
+| `.github/workflows/generate-pdf.yml` | CI: triggers on `data-*.js` push to main, auto-generates PDF artifact |
+| `output/` | Generated PDFs (auto-created; add to `.gitignore` or commit, your choice) |
+
+**Key constraint**: `print.html` uses `document.write()` to inject the data script before `DOMContentLoaded`. Paged.js must load from `vendor/paged.polyfill.js` (local), not a CDN, because `file://` URLs block cross-origin requests.
