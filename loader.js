@@ -5,7 +5,7 @@
 //   1. Determine which month/year to load based on today's date
 //   2. Dynamically inject the correct data-[month]-[year].js script
 //   3. Probe whether next month's data file exists on the server
-//   4. Expose window.SKY_NEXT for app.js to render the teaser button
+//   4. Expose window.SKY_NEXT and window.SKY_PREV for app.js month navigation
 //
 // If the current month's file is missing (not yet deployed), falls back
 // to the most recent available month (tries up to 3 months back).
@@ -134,23 +134,36 @@ async function tryLoad(index) {
     // so SKY_INIT may not be defined yet when this async callback fires.
     waitForInit();
 
-    // Probe next month in the background
+    // Probe next and previous months in the background
     const next = nextMonthOf(monthIndex, year);
     const nextSrc = filename(next.monthIndex, next.year);
 
     probe(nextSrc).then(exists => {
       if (!exists) return;
-      // Next month is available — expose for app.js teaser button
       const name = MONTHS[next.monthIndex];
-      const displayName = name.charAt(0).toUpperCase() + name.slice(1);
       window.SKY_NEXT = {
         src:   nextSrc,
-        month: displayName,
+        month: name.charAt(0).toUpperCase() + name.slice(1),
         year:  next.year,
       };
-      // If app is already initialised, trigger teaser render
       if (typeof window.SKY_RENDER_NEXT_TEASER === 'function') {
         window.SKY_RENDER_NEXT_TEASER();
+      }
+    });
+
+    const prev = prevMonthOf(monthIndex, year);
+    const prevSrc = filename(prev.monthIndex, prev.year);
+
+    probe(prevSrc).then(exists => {
+      if (!exists) return;
+      const name = MONTHS[prev.monthIndex];
+      window.SKY_PREV = {
+        src:   prevSrc,
+        month: name.charAt(0).toUpperCase() + name.slice(1),
+        year:  prev.year,
+      };
+      if (typeof window.SKY_RENDER_PREV_BACK === 'function') {
+        window.SKY_RENDER_PREV_BACK();
       }
     });
 

@@ -607,9 +607,9 @@ setTrackTop(false);
 updateUI(0);
 
 // ── NEXT MONTH TEASER + PREV MONTH BACK BUTTON ────────────────────────────
-// renderNextTeaser: shows "May 2026 →" pill when next month's file exists.
-// renderPrevBack:   shows "← April 2026" pill when in ?preview= mode.
-// Both exposed globally so loader.js can call them after async resolution.
+// renderNextTeaser: shows "→ Next month" pill when the next data file exists on the server.
+// renderPrevBack:   shows "← Prev month" pill when the previous data file exists on the server.
+// Both exposed globally so loader.js can call them after its async HEAD probes resolve.
 
 function renderNextTeaser() {
   if (document.getElementById('next-month-teaser')) return;
@@ -628,29 +628,21 @@ function renderNextTeaser() {
 
 function renderPrevBack() {
   if (document.getElementById('prev-month-back')) return;
-  // Only show when we're in preview mode
-  const params = new URLSearchParams(window.location.search);
-  if (!params.get('preview')) return;
-
-  // "Back" means: strip the preview param → load current calendar month
-  const MONTHS = ['january','february','march','april','may','june',
-                  'july','august','september','october','november','december'];
-  const now = new Date();
-  const curMonth = MONTHS[now.getMonth()];
-  const curYear  = now.getFullYear();
-  const curDisplay = curMonth.charAt(0).toUpperCase() + curMonth.slice(1);
-
+  const prev = window.SKY_PREV;
+  if (!prev) return;
   const btn = document.createElement('button');
   btn.id = 'prev-month-back';
-  btn.setAttribute('aria-label', `Back to ${curDisplay} ${curYear}`);
-  btn.innerHTML = `<span class="nt-arrow">←</span><span class="nt-label">${curDisplay} ${curYear}</span>`;
+  btn.setAttribute('aria-label', `Go to ${prev.month} ${prev.year}`);
+  btn.innerHTML = `<span class="nt-arrow">←</span><span class="nt-label">${prev.month} ${prev.year}</span>`;
   btn.addEventListener('click', () => {
-    window.location.href = window.location.pathname; // strips ?preview=
+    const slug = prev.month.toLowerCase() + '-' + prev.year;
+    window.location.href = window.location.pathname + '?preview=' + slug;
   });
   document.body.appendChild(btn);
 }
 
 window.SKY_RENDER_NEXT_TEASER = renderNextTeaser;
+window.SKY_RENDER_PREV_BACK   = renderPrevBack;
 renderNextTeaser();
 renderPrevBack();
 
