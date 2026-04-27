@@ -38,11 +38,47 @@ function prevMonthOf(monthIndex, year) {
     : { monthIndex: monthIndex - 1, year };
 }
 
-// Probe whether a file exists via HEAD request (no body, just status)
+// Probe whether a JS data file exists on the server.
+// Checks both HTTP status and Content-Type — servers that return a 200 OK
+// with an HTML error page (common on GitHub Pages / CDNs) are treated as misses.
 function probe(url) {
   return fetch(url, { method: 'HEAD' })
-    .then(r => r.ok)
+    .then(r => {
+      if (!r.ok) return false;
+      const ct = r.headers.get('content-type') || '';
+      return !ct.includes('text/html');
+    })
     .catch(() => false);
+}
+
+// Probe the month before and after `monthIndex/year` and expose window.SKY_PREV
+// / window.SKY_NEXT so app.js can render the navigation pills.
+function probeAdjacent(monthIndex, year) {
+  const next    = nextMonthOf(monthIndex, year);
+  const nextSrc = filename(next.monthIndex, next.year);
+  probe(nextSrc).then(exists => {
+    if (!exists) return;
+    const name = MONTHS[next.monthIndex];
+    window.SKY_NEXT = {
+      src:   nextSrc,
+      month: name.charAt(0).toUpperCase() + name.slice(1),
+      year:  next.year,
+    };
+    if (typeof window.SKY_RENDER_NEXT_TEASER === 'function') window.SKY_RENDER_NEXT_TEASER();
+  });
+
+  const prev    = prevMonthOf(monthIndex, year);
+  const prevSrc = filename(prev.monthIndex, prev.year);
+  probe(prevSrc).then(exists => {
+    if (!exists) return;
+    const name = MONTHS[prev.monthIndex];
+    window.SKY_PREV = {
+      src:   prevSrc,
+      month: name.charAt(0).toUpperCase() + name.slice(1),
+      year:  prev.year,
+    };
+    if (typeof window.SKY_RENDER_PREV_BACK === 'function') window.SKY_RENDER_PREV_BACK();
+  });
 }
 
 // Wait until window.SKY_INIT is defined (app.js may still be parsing),
@@ -134,38 +170,8 @@ async function tryLoad(index) {
     // so SKY_INIT may not be defined yet when this async callback fires.
     waitForInit();
 
-    // Probe next and previous months in the background
-    const next = nextMonthOf(monthIndex, year);
-    const nextSrc = filename(next.monthIndex, next.year);
-
-    probe(nextSrc).then(exists => {
-      if (!exists) return;
-      const name = MONTHS[next.monthIndex];
-      window.SKY_NEXT = {
-        src:   nextSrc,
-        month: name.charAt(0).toUpperCase() + name.slice(1),
-        year:  next.year,
-      };
-      if (typeof window.SKY_RENDER_NEXT_TEASER === 'function') {
-        window.SKY_RENDER_NEXT_TEASER();
-      }
-    });
-
-    const prev = prevMonthOf(monthIndex, year);
-    const prevSrc = filename(prev.monthIndex, prev.year);
-
-    probe(prevSrc).then(exists => {
-      if (!exists) return;
-      const name = MONTHS[prev.monthIndex];
-      window.SKY_PREV = {
-        src:   prevSrc,
-        month: name.charAt(0).toUpperCase() + name.slice(1),
-        year:  prev.year,
-      };
-      if (typeof window.SKY_RENDER_PREV_BACK === 'function') {
-        window.SKY_RENDER_PREV_BACK();
-      }
-    });
+    // Probe adjacent months in the background to populate nav pills.
+    probeAdjacent(monthIndex, year);
 
   } catch (e) {
     // This file doesn't exist — try the next candidate
@@ -189,6 +195,7 @@ if (previewParam) {
           window.SKY_LOADED_FILE = `./data-${parts[1]}-${yr}.js`;
           window.SKY_LOADED_MONTH = { monthIndex: mi, year: yr };
           waitForInit();
+          probeAdjacent(mi, yr); // populate ← / → nav pills for this preview month
         })
         .catch(() => tryLoad(0)); // fallback to normal if preview file missing
       return; // skip normal load
