@@ -23,7 +23,7 @@ Attach all of the following. The AI needs them to understand the engine, avoid r
 | `log-ui.js` | Log overlay UI | Never |
 | `data-[prev-month]-[prev-year].js` | Most recent data file | Reference schema only |
 
-> For the very first month after April 2026, attach `data-april-2026.js` as the reference. For every subsequent month, attach the most recent data file instead.
+> Always attach the most recent data file available. As of June 2026, that is `data-june-2026.js`.
 
 ---
 
@@ -38,8 +38,9 @@ Produce exactly these outputs:
 
   OUTPUT 1  — data-[month]-[year].js          (full new file)
   OUTPUT 2  — sketches.js                     (full file — existing entries preserved, new ones appended)
-  PATCH A   — index.html script tag           (the one changed line only)
-  PATCH B   — sw.js                           (the two changed lines only: CACHE name + data filename in ASSETS)
+  PATCH B   — sw.js                           (the one changed line only: CACHE version bump)
+
+Note: index.html does NOT need a patch. `loader.js` dynamically selects the correct data file by date at runtime — no script tag in index.html points to a specific month's data file.
 
 ---
 
@@ -175,7 +176,8 @@ window.SKY_DATA = {
   // CRITICAL svgId rules:
   //   - Check the attached sketches.js first.
   //   - If the object's svgId already exists there: use it exactly as-is.
-  //     Existing ids: sk_m42, sk_m46, sk_m47, sk_m44, sk_m3, sk_algieba, sk_leo, sk_m51
+  //     Existing ids: sk_m42, sk_m46, sk_m47, sk_m44, sk_m3, sk_algieba, sk_leo, sk_m51,
+  //                   sk_m13, sk_m5, sk_m57, sk_albireo, sk_m64, sk_m4, sk_m10, sk_m8
   //   - If the object is new: assign sk_[id] and generate SVG in OUTPUT 2.
   //   - NEVER embed svg: content in the data file. Only svgId and label.
   //
@@ -225,7 +227,9 @@ window.SKY_DATA = {
 ## OUTPUT 2 — sketches.js
 
 The attached sketches.js already contains these objects — do not regenerate or modify them:
-`sk_m42, sk_m46, sk_m47, sk_m44, sk_m3, sk_algieba, sk_leo, sk_m51`
+`sk_m42, sk_m46, sk_m47, sk_m44, sk_m3, sk_algieba, sk_leo, sk_m51` (original)
+`sk_m13, sk_m5, sk_m57, sk_albireo, sk_m64` (added May 2026)
+`sk_m4, sk_m10, sk_m8` (added June 2026)
 
 For every object in OUTPUT 1 whose svgId is NOT in that list, generate a new SVG entry and append it inside `window.SKY_SKETCHES = { ... }` before the closing `};`.
 
@@ -273,27 +277,20 @@ Globular glow:   #3a3a5c → #6060a0 → #c0c0e8
 
 ---
 
-## PATCH A — index.html (one line only)
+## PATCH B — sw.js (one line only)
 
-Find the data script tag:
-```html
-<script src="./data-[previous-month]-[previous-year].js"></script>
+Increment the cache version counter:
+
+```js
+const CACHE = 'clear-skies-vN';   // bump N by 1 from the previous value
 ```
-Change it to:
-```html
-<script src="./data-[new-month]-[new-year].js"></script>
-```
+
+For example, if the previous value was `'clear-skies-v7'`, change it to `'clear-skies-v8'`.
+
+Do **not** reset to v1 for a new month — this is a continuously deployed multi-month application.
+Data files (`data-[month]-[year].js`) are **not** listed in `ASSETS` and are fetched at runtime by `loader.js` — do not add them.
+
 Output only that single changed line.
-
----
-
-## PATCH B — sw.js (two lines only)
-
-1. Change the cache name: `const CACHE = '[month-slug]-skies-v1';`
-   (always reset to v1 for a new month, e.g. `'may-skies-v1'`)
-2. Change the data filename in ASSETS: `'./data-[new-month]-[new-year].js'`
-
-Output only those two changed lines.
 
 ---
 
@@ -332,22 +329,21 @@ Produce in this exact order, clearly delimited with headers:
 ### OUTPUT 2: sketches.js
 [full file — all existing entries preserved, new entries appended]
 
-### PATCH A: index.html
-[the single changed script src line]
-
 ### PATCH B: sw.js
-[the two changed lines]
+[the single changed cache version line]
 ```
 
 ---
 
 ## Notes for the person using this prompt
 
-**Do not ask the AI to regenerate `app.js`, `log.js`, `log-ui.js`, `objects-db.js`, `constellations.js`, `quotes.js`, `manifest.json`, or the CSS.** These are stable and should never change month to month. The only engine files that change are `index.html` (one line) and `sw.js` (two lines).
+**Clear Skies is a multi-month application.** New monthly data files (`data-[month]-[year].js`) are added as each month comes around. `loader.js` automatically selects the correct file by the current date — no other file needs changing to "activate" a new month. All monthly editions coexist on the server.
+
+**Do not ask the AI to regenerate `app.js`, `log.js`, `log-ui.js`, `objects-db.js`, `constellations.js`, `quotes.js`, `manifest.json`, or the CSS.** These are stable and should never change month to month. The only engine file that changes is `sw.js` (one line: the CACHE version bump). `index.html` does not need patching — `loader.js` handles data-file selection dynamically.
 
 **Moon phases need independent verification.** AI models frequently miscalculate lunar calendars. Always cross-check `moonPhases[]` and `newMoonDay` against a reliable source before publishing. The visual on the Moon slide will be obviously wrong if the phases are off.
 
-**Reusing existing sketches is always preferred.** Before the AI generates a new SVG, check whether that object is already in `sketches.js`. M3, M42, M44, M46, M47, M51, Algieba, and the Leo Triplet are already there. Summer months can reuse M3 and M51. M44 is a spring–autumn fixture. Each reuse saves ~2KB and a round of SVG generation.
+**Reusing existing sketches is always preferred.** Before the AI generates a new SVG, check whether that object is already in `sketches.js`. Current catalogue: M3, M4, M5, M8, M10, M13, M42, M44, M46, M47, M51, M57, M64, Algieba, Albireo, and the Leo Triplet. Summer months can reuse M3, M5, M13, M57, and Albireo. M44 is a spring–autumn fixture. M4/M8/M10 suit June–August. Each reuse saves ~2KB and a round of SVG generation.
 
 **SVGs are artistic impressions, not simulations.** Slight inaccuracies in star placement are acceptable. What matters is that object type, brightness character, and visual texture are representative of what the 114mm scope shows at the stated magnification.
 
