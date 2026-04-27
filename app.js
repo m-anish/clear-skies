@@ -427,10 +427,19 @@ track.addEventListener('touchend', e => {
 // ── REDSHIFT BUBBLE ────────────────────────────────────────────────────────
 const bubble = document.getElementById('nightmode-bubble');
 const nbIcon = bubble.querySelector('.nb-icon');
+
+// Restore redshift state across navigation and sessions
+if (localStorage.getItem('sky-redshift') === '1') {
+  document.body.classList.add('red-sky');
+  nbIcon.innerHTML = '🪐';
+  document.querySelector('meta[name="theme-color"]').content = '#100400';
+}
+
 bubble.addEventListener('click', () => {
   const on = document.body.classList.toggle('red-sky');
   nbIcon.innerHTML = on ? '🪐' : '&#x2600;&#xFE0E;';
   document.querySelector('meta[name="theme-color"]').content = on ? '#100400' : '#09090f';
+  localStorage.setItem('sky-redshift', on ? '1' : '0');
 });
 
 // ── SERVICE WORKER + UPDATE TOAST ─────────────────────────────────────────

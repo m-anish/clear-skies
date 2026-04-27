@@ -20,19 +20,18 @@ const CSS = `
   border: 2px solid rgba(64,192,160,0.45);
   box-shadow: 0 2px 20px rgba(0,0,0,0.6);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
+  cursor: pointer; color: rgba(64,192,160,0.85);
   transition: background .3s, border-color .3s, transform .15s;
   -webkit-tap-highlight-color: transparent; user-select: none;
 }
 #log-bubble:hover  { transform: scale(1.1); border-color: rgba(64,192,160,0.8); }
 #log-bubble:active { transform: scale(0.92); }
 #log-bubble .lb-icon {
-  font-size: 22px; line-height: 1;
   display: flex; align-items: center; justify-content: center;
   width: 100%; height: 100%;
 }
 #log-bubble::after {
-  content: 'Observer\'s log';
+  content: "Observer's log";
   position: absolute; right: calc(100% + 10px); top: 50%; transform: translateY(-50%);
   background: rgba(9,9,15,0.95); border: 1px solid rgba(64,192,160,0.3); border-radius: 6px;
   padding: 5px 11px; font-family: var(--sans); font-size: 11px; color: rgba(64,192,160,0.85);
@@ -40,7 +39,7 @@ const CSS = `
   transition: opacity .2s;
 }
 #log-bubble:hover::after { opacity: 1; }
-body.red-sky #log-bubble { background: rgba(60,8,0,0.94); border-color: rgba(255,80,30,0.5); }
+body.red-sky #log-bubble { background: rgba(60,8,0,0.94); border-color: rgba(255,80,30,0.5); color: rgba(255,100,60,0.85); }
 body.red-sky #log-bubble::after { border-color: rgba(255,80,30,0.35); color: rgba(255,120,80,0.85); }
 
 /* ── OVERLAY ── */
@@ -371,7 +370,13 @@ function buildDOM() {
   const btn = document.createElement('button');
   btn.id = 'log-bubble';
   btn.setAttribute('aria-label', 'Observer\'s log');
-  btn.innerHTML = '<span class="lb-icon">📓</span>';
+  btn.innerHTML = '<span class="lb-icon">' +
+    '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" ' +
+    'stroke="currentColor" stroke-width="1.8" stroke-linecap="round" ' +
+    'stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>' +
+    '<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' +
+    '</svg></span>';
   document.body.appendChild(btn);
 
   // Full-screen overlay
