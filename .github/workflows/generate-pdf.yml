@@ -102,11 +102,11 @@ jobs:
       # Make sure the workflow has write permissions in repo Settings →
       # Actions → General → Workflow permissions → "Read and write permissions"
       #
-      # - name: Commit PDF to repo
-      #   run: |
-      #     git config user.name  "github-actions[bot]"
-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
-      #     git add output/clear-skies-${{ steps.detect.outputs.slug }}.pdf
-      #     git commit -m "chore: add PDF for ${{ steps.detect.outputs.month }} ${{ steps.detect.outputs.year }} [skip ci]" \
-      #       || echo "Nothing to commit"
-      #     git push
+      - name: Commit PDF to repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/clear-skies-${{ steps.detect.outputs.slug }}.pdf
+          git commit -m "chore: add PDF for ${{ steps.detect.outputs.month }} ${{ steps.detect.outputs.year }} [skip ci]" \
+            || echo "Nothing to commit"
+          git push
