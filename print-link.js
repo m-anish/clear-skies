@@ -1,117 +1,109 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// print-link.js — Clear Skies PWA print edition download pill
+// print-link.js — Clear Skies print edition download icon button
 //
-// Self-contained IIFE (same pattern as log-ui.js). Injects a floating
-// "📄 Print edition" pill button when a PDF exists at:
-//   ./output/clear-skies-[month]-[year].pdf
-//
-// The pill appears on every slide, positioned bottom-left (opposite corner
-// from the 📓 observer log button). It is hidden until the HEAD probe
-// confirms the PDF is present on the server.
-//
-// Does nothing in offline mode — the HEAD fetch simply fails and no pill
-// is shown. The PDF itself is not cached by the service worker (it can be
-// large), so the download always comes from the network.
+// Injects a 54px circle icon button (matching nightmode/log bubbles) when a
+// PDF exists at ./output/clear-skies-[month]-[year].pdf. Positioned
+// bottom-left above the ← prev-month pill. No text — tooltip on hover only.
 // ─────────────────────────────────────────────────────────────────────────────
 
 (function () {
   'use strict';
 
-  // ── Wait for SKY_DATA to be populated by loader.js ──────────────────────
-  // loader.js calls window.SKY_INIT after data is ready, so by the time
-  // DOMContentLoaded fires and log-ui.js runs, SKY_DATA is set.
-  // We mirror that pattern: poll until SKY_DATA is available.
-
   function waitForData(cb, elapsed) {
     elapsed = elapsed || 0;
     if (window.SKY_DATA) { cb(window.SKY_DATA); return; }
-    if (elapsed > 6000)  { return; }            // give up after 6 s
+    if (elapsed > 6000)  { return; }
     setTimeout(function () { waitForData(cb, elapsed + 50); }, 50);
   }
 
   // ── Inject CSS ────────────────────────────────────────────────────────────
   var style = document.createElement('style');
   style.textContent = [
-    '.pdf-pill {',
+    '#pdf-bubble {',
     '  position: fixed;',
-    '  bottom: 14px;',
-    '  left: 14px;',
+    '  bottom: 110px;',
+    '  right: 16px;',
     '  z-index: 500;',
+    '  width: 54px;',
+    '  height: 54px;',
+    '  border-radius: 50%;',
+    '  background: rgba(20,20,50,0.92);',
+    '  backdrop-filter: blur(14px);',
+    '  border: 2px solid rgba(64,192,160,0.45);',
+    '  box-shadow: 0 2px 20px rgba(0,0,0,0.6);',
     '  display: flex;',
     '  align-items: center;',
-    '  gap: 6px;',
-    '  background: var(--card, #13131f);',
-    '  border: 1px solid var(--border, rgba(255,255,255,0.1));',
-    '  border-radius: 20px;',
-    '  padding: 6px 13px 6px 10px;',
-    '  font-family: var(--sans, sans-serif);',
-    '  font-size: 12px;',
-    '  color: var(--teal, #40c0a0);',
-    '  text-decoration: none;',
+    '  justify-content: center;',
     '  cursor: pointer;',
-    '  transition: opacity 0.2s, transform 0.2s;',
+    '  text-decoration: none;',
+    '  color: rgba(64,192,160,0.85);',
     '  opacity: 0;',
     '  pointer-events: none;',
-    '  transform: translateY(6px);',
+    '  transition: background .3s, border-color .3s, box-shadow .3s, transform .15s, opacity .3s;',
+    '  -webkit-tap-highlight-color: transparent;',
+    '  user-select: none;',
     '}',
-    '.pdf-pill.visible {',
+    '#pdf-bubble.visible {',
     '  opacity: 1;',
     '  pointer-events: auto;',
-    '  transform: translateY(0);',
     '}',
-    '.pdf-pill:hover {',
-    '  background: var(--teal, #40c0a0);',
-    '  color: #000;',
-    '  border-color: transparent;',
+    '#pdf-bubble:hover  { transform: scale(1.1); border-color: rgba(64,192,160,0.8); }',
+    '#pdf-bubble:active { transform: scale(0.92); }',
+    '#pdf-bubble svg { display: block; }',
+    '/* Tooltip — appears to the right since button is on the left edge */',
+    '#pdf-bubble::after {',
+    '  content: "Print edition";',
+    '  position: absolute;',
+    '  right: calc(100% + 10px);',
+    '  top: 50%;',
+    '  transform: translateY(-50%);',
+    '  background: rgba(9,9,15,0.95);',
+    '  border: 1px solid rgba(64,192,160,0.3);',
+    '  border-radius: 6px;',
+    '  padding: 5px 11px;',
+    '  font-family: var(--sans, sans-serif);',
+    '  font-size: 11px;',
+    '  color: rgba(64,192,160,0.85);',
+    '  letter-spacing: .04em;',
+    '  white-space: nowrap;',
+    '  opacity: 0;',
+    '  pointer-events: none;',
+    '  transition: opacity .2s;',
     '}',
-    '.pdf-pill svg {',
-    '  flex-shrink: 0;',
-    '  width: 14px;',
-    '  height: 14px;',
-    '  fill: currentColor;',
+    '#pdf-bubble:hover::after { opacity: 1; }',
+    'body.red-sky #pdf-bubble {',
+    '  background: rgba(60,8,0,0.94);',
+    '  border-color: rgba(255,80,30,0.5);',
+    '  box-shadow: 0 0 22px rgba(255,50,10,0.4), 0 2px 8px rgba(0,0,0,0.55);',
+    '  color: rgba(255,100,60,0.85);',
     '}',
-    '/* Red-sky mode: keep the pill readable */',
-    'body.red-sky .pdf-pill {',
-    '  background: #1a0000;',
-    '  border-color: rgba(255,60,0,0.25);',
-    '  color: #c03000;',
-    '}',
-    'body.red-sky .pdf-pill:hover {',
-    '  background: #c03000;',
-    '  color: #000;',
-    '}',
-    '/* Desktop: bump font size to match larger UI scale */',
-    '@media (min-width: 900px) {',
-    '  .pdf-pill { font-size: 13px; bottom: 18px; left: 18px; }',
+    'body.red-sky #pdf-bubble:hover { border-color: rgba(255,100,50,0.88); }',
+    'body.red-sky #pdf-bubble::after {',
+    '  border-color: rgba(255,80,30,0.35);',
+    '  color: rgba(255,120,80,0.85);',
     '}',
   ].join('\n');
   document.head.appendChild(style);
 
-  // ── Build pill DOM ────────────────────────────────────────────────────────
-  var pill = document.createElement('a');
-  pill.className = 'pdf-pill';
-  pill.title     = 'Download print edition PDF';
-  // Download icon (simple page-with-arrow SVG)
-  pill.innerHTML =
-    '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">' +
-      '<path d="M9 1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6z" opacity="0.25"/>' +
-      '<path d="M9 1v5h5"/>' +
-      '<path d="M8 8v5M5.5 10.5 8 13l2.5-2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '</svg>' +
-    'Print edition';
+  // ── Build circle button ───────────────────────────────────────────────────
+  var btn = document.createElement('a');
+  btn.id = 'pdf-bubble';
+  btn.setAttribute('aria-label', 'Download print edition PDF');
+  btn.title = 'Download print edition';
 
-  // Force SVG paths to use fill=none/stroke as needed
-  var svgPaths = pill.querySelectorAll('path');
-  svgPaths[0].setAttribute('fill', 'currentColor');
-  svgPaths[0].setAttribute('stroke', 'none');
-  svgPaths[1].setAttribute('fill', 'none');
-  svgPaths[1].setAttribute('stroke', 'currentColor');
-  svgPaths[1].setAttribute('stroke-width', '1.5');
-  svgPaths[2].setAttribute('fill', 'none');
-  svgPaths[2].setAttribute('stroke', 'currentColor');
-  svgPaths[2].setAttribute('stroke-width', '1.5');
+  // Document-with-fold + downward arrow — uses currentColor for theme/redshift
+  btn.innerHTML =
+    '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" ' +
+    'stroke="currentColor" stroke-width="1.8" stroke-linecap="round" ' +
+    'stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" ' +
+    'fill="currentColor" stroke="none" opacity=".3"/>' +
+    '<polyline points="14 2 14 8 20 8"/>' +
+    '<line x1="12" y1="10" x2="12" y2="16"/>' +
+    '<polyline points="9.5 13.5 12 16 14.5 13.5"/>' +
+    '</svg>';
 
-  document.body.appendChild(pill);
+  document.body.appendChild(btn);
 
   // ── Probe + show ─────────────────────────────────────────────────────────
   waitForData(function (d) {
@@ -119,20 +111,17 @@
     var year    = d.year  || '';
     var pdfPath = './output/clear-skies-' + month + '-' + year + '.pdf';
 
-    pill.href     = pdfPath;
-    pill.download = 'clear-skies-' + month + '-' + year + '.pdf';
+    btn.href     = pdfPath;
+    btn.download = 'clear-skies-' + month + '-' + year + '.pdf';
 
-    // HEAD probe — if the file exists on the server, show the pill
     fetch(pdfPath, { method: 'HEAD' })
       .then(function (res) {
         if (res.ok) {
-          pill.classList.add('visible');
+          btn.classList.add('visible');
           console.log('[print-link.js] PDF available:', pdfPath);
         }
       })
-      .catch(function () {
-        // Network error or file not found — pill stays hidden
-      });
+      .catch(function () {});
   });
 
 })();

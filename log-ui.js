@@ -14,7 +14,7 @@
 const CSS = `
 /* ── LOG BUTTON ── */
 #log-bubble {
-  position: fixed; bottom: 110px; right: 16px; z-index: 500;
+  position: fixed; bottom: 234px; right: 16px; z-index: 500;
   width: 54px; height: 54px; border-radius: 50%;
   background: rgba(20,20,50,0.92); backdrop-filter: blur(14px);
   border: 2px solid rgba(64,192,160,0.45);

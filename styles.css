@@ -88,7 +88,7 @@ html,body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New 
 
 /* ── REDSHIFT BUBBLE ─────────────────────────────────────────────────────── */
 #nightmode-bubble{
-  position:fixed;bottom:48px;right:16px;z-index:500;
+  position:fixed;bottom:172px;right:16px;z-index:500;
   width:54px;height:54px;border-radius:50%;
   background:rgba(30,28,50,0.92);backdrop-filter:blur(14px);
   border:2px solid rgba(200,190,255,0.45);
