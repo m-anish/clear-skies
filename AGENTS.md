@@ -22,7 +22,7 @@
 
 ```
 clear-skies/
-├── index.html                  # HTML shell — barely changes month to month
+├── index.html                  # HTML shell — never changes month to month
 ├── styles.css                  # Global stylesheet — never changes month to month
 ├── app.js                      # PWA engine — never changes month to month
 ├── loader.js                   # Data-file loader — never changes month to month
@@ -32,10 +32,11 @@ clear-skies/
 ├── sketches.js                 # SVG sketch registry — append-only
 ├── constellations.js           # Cover constellation SVG registry — append-only
 ├── quotes.js                   # Quote registry — append-only
-├── sw.js                       # Service Worker — 2 lines change per month
+├── sw.js                       # Service Worker — 1 line changes per month (cache version)
 ├── manifest.json               # PWA manifest — never changes
-├── data-april-2026.js          # Monthly data file (one per month)
-├── data-may-2026.js            # Next month's data file (preview-ready)
+├── data-april-2026.js          # Monthly data files (one per month, all coexist on server)
+├── data-may-2026.js
+├── data-june-2026.js
 ├── icon-192.png                # PWA icons
 ├── icon-512.png
 ├── PROMPT_generate_monthly_edition.md  # AI prompt for producing new editions
@@ -46,14 +47,15 @@ clear-skies/
 
 | File | Changes? |
 |---|---|
-| `data-[month]-[year].js` | **Every month** — the only content file |
-| `sw.js` | **2 lines per month** (cache name + data filename) |
-| `index.html` | **1 line per month** (data script tag) |
+| `data-[month]-[year].js` | **Every month** — new file added, old ones stay on the server |
+| `sw.js` | **1 line per month** — cache version counter incremented (`clear-skies-vN`) |
 | `objects-db.js` | **Append-only** — add objects, never remove or rename |
 | `sketches.js` | **Append-only** — add SVG sketches, never modify existing |
 | `constellations.js` | **Append-only** — add constellation paths, never modify |
 | `quotes.js` | **Append-only** — add quotes, never modify |
 | Everything else | **Never changes** |
+
+> **Note:** `index.html` does **not** need a monthly edit. `loader.js` selects the correct data file dynamically by current date (with `?preview=month-year` for future/past browsing). All monthly data files coexist on the server.
 
 ---
 
@@ -83,7 +85,9 @@ app.js            → window.SKY_INIT  (set synchronously but called by loader.j
 | `window.SKY_DATA` | `data-[month]-[year].js` | `app.js`, `log.js`, `log-ui.js` | See §5 |
 | `window.SKY_INIT` | `app.js` | `loader.js` | `function()` |
 | `window.SKY_NEXT` | `loader.js` | `app.js` | `{src, month, year}` or `undefined` |
+| `window.SKY_PREV` | `loader.js` | `app.js` | `{src, month, year}` or `undefined` |
 | `window.SKY_RENDER_NEXT_TEASER` | `app.js` | `loader.js` | `function()` |
+| `window.SKY_RENDER_PREV_BACK` | `app.js` | `loader.js` | `function()` |
 | `window.SKY_SKETCHES` | `sketches.js` | `app.js` | `{ [svgId]: svgInnerHTML }` |
 | `window.SKY_CONSTELLATIONS` | `constellations.js` | `app.js` | `{ [key]: svgPathsHTML }` |
 | `window.SKY_QUOTE` | `quotes.js` | `app.js` | `{ q: string, a: string }` |
@@ -96,7 +100,7 @@ app.js            → window.SKY_INIT  (set synchronously but called by loader.j
 
 ## 5. `SKY_DATA` Schema (Complete)
 
-Every field below must be present in every data file. See `data-april-2026.js` for a complete working example.
+Every field below must be present in every data file. See `data-june-2026.js` (the most recent edition) for a complete working example.
 
 ```js
 window.SKY_DATA = {
@@ -252,8 +256,8 @@ Seeded deterministic PRNG (`mulberry32`) — same star pattern every load. 180 s
 ### Other features
 - **Red-shift mode**: toggles `body.red-sky` class, remaps all CSS custom properties via the cascade
 - **Service Worker**: registers `sw.js`, checks for updates on every load, shows update toast
-- **Next-month teaser**: probes next month's data file via HEAD request; shows pill if it exists
-- **Preview mode**: `?preview=may-2026` URL param loads that month's data file instead
+- **Month navigation**: `loader.js` probes both the next and previous month's data files via HEAD requests after loading; shows `→ Next` and `← Prev` pills for whichever exist. Adding a new data file to the server automatically extends the navigation chain in both directions.
+- **Preview mode**: `?preview=june-2026` URL param loads that month's data file instead of the current calendar month
 - **Easter egg**: appears only on Easter Sunday, computed via Gregorian algorithm
 
 ---
@@ -329,7 +333,7 @@ window.SKY_SKETCHES = {
 - The `app.js` `sketch()` helper wraps this in `<svg width="..." height="..." viewBox="0 0 140 140">...</svg>`
 - Missing svgId logs a console warning: `[app.js] Missing sketch: sk_xxx — add it to sketches.js`
 
-**Currently registered:** `sk_m42, sk_m46, sk_m47, sk_m44, sk_m3, sk_algieba, sk_leo, sk_m51`
+**Currently registered:** `sk_m42, sk_m46, sk_m47, sk_m44, sk_m3, sk_algieba, sk_leo, sk_m51` (original) · `sk_m13, sk_m5, sk_m57, sk_albireo, sk_m64` (May 2026) · `sk_m4, sk_m10, sk_m8` (June 2026)
 
 ### `constellations.js`
 ```js
@@ -354,9 +358,8 @@ window.SKY_QUOTE = { q: 'Quote text', a: 'Attribution' };
 ## 10. Service Worker (`sw.js`)
 
 - Cache-first strategy: all assets cached on install, served from cache, network only on miss
-- **Two lines change per month**:
-  1. `const CACHE = 'april-skies-v1';` → new slug-v1 (always reset to v1 for a new month)
-  2. The data filename in the `ASSETS` array: `'./data-april-2026.js'` → new file
+- **One line changes per month**: `const CACHE = 'clear-skies-vN';` — increment `N` by 1 (e.g. `v7` → `v8`). Do **not** reset to v1; this is a continuously deployed multi-month app.
+- Data files (`data-[month]-[year].js`) are **not** in the `ASSETS` precache array — they are fetched and cached at runtime by `loader.js` on first load.
 - Activation: old caches deleted, `clients.claim()` for immediate takeover
 - Update flow: `app.js` calls `reg.update()` on every load; new SW triggers update toast; clicking toast posts `SKIP_WAITING` to activate immediately
 
@@ -367,12 +370,11 @@ window.SKY_QUOTE = { q: 'Quote text', a: 'Attribution' };
 1. **Generate content** using `PROMPT_generate_monthly_edition.md` with an AI — produces:
    - `OUTPUT 1`: new `data-[month]-[year].js` (full file)
    - `OUTPUT 2`: updated `sketches.js` (existing + new SVGs appended)
-   - `PATCH A`: updated `index.html` script tag (1 line)
-   - `PATCH B`: updated `sw.js` (2 lines)
+   - `PATCH B`: updated `sw.js` (1 line — increment `clear-skies-vN`)
 
 2. **Verify** moon phases against timeanddate.com or NASA (AI lunar calendars are unreliable).
 
-3. **Deploy** all changed files. The new edition is live immediately. Previous month's file remains on the server — the `?preview=` mechanism and loader fallback use it.
+3. **Deploy** the new data file and the two updated files. The new edition is live immediately — `loader.js` picks it up by date. All previous month files remain on the server; the `?preview=` mechanism and the ← / → navigation use them automatically.
 
 4. **Check console** for any `[app.js] Missing sketch:` warnings → add SVGs to `sketches.js` if needed.
 
@@ -408,7 +410,7 @@ The `mulberry32` PRNG is seeded with a fixed constant (`0xdeadbeef`). The starfi
 | **`svgId` in data files** | SVG sketches must exist in `sketches.js` before the data file references them. A missing `svgId` renders an empty box and logs a warning — it does not throw. |
 | **`twoSketch: true`** | Changes the object card layout to a `two-sketch-row` grid. Both `sketches[]` entries are rendered side by side. Use only for naturally paired objects (e.g. M46 + M47). |
 | **Preview mode** | `?preview=may-2026` bypasses the normal month detection entirely. Useful for QA before a new month begins. |
-| **SW cache reset** | The SW cache name must be reset to `v1` each month (`may-skies-v1`, not `v2`). This ensures all users download fresh assets when the month changes. |
+| **SW cache version** | The SW cache name is `clear-skies-vN` — increment `N` by 1 each month. Do **not** reset to v1; the counter is cumulative across the app's lifetime. Bumping the version evicts old caches and forces all clients to download fresh assets. |
 | **`moonPhases[]` length** | Must exactly match the number of days in the month (30 or 31). Off-by-one causes the phase strip to overflow or clip. |
 | **`constellations.js` keys** | `coverConstellation` in `SKY_DATA` must match a key in `window.SKY_CONSTELLATIONS`. Missing key = no watermark (silent, not an error). |
 | **`plannerFooter`** | Optional. If falsy, the paragraph is not rendered. Safe to omit. |
@@ -444,7 +446,7 @@ Edit `objects-db.js`. Append to the relevant section:
 
 ---
 
-*Last updated: April 2026*
+*Last updated: June 2026*
 
 ---
 
