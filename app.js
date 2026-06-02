@@ -293,6 +293,13 @@ function buildCredits() {
     <strong>Eyepieces</strong> · ${ep.map(e => `${e.focal}mm (${e.mag}×)`).join(' &nbsp;·&nbsp; ')}<br>
     <strong>Hemisphere</strong> · ${D.hemisphere.charAt(0).toUpperCase() + D.hemisphere.slice(1)} &nbsp;·&nbsp; <strong>Month</strong> · ${D.month} ${D.year}
   </div>
+  <div class="credits-support">
+    <div class="credits-role">Free, monthly · keep it going</div>
+    <div class="credits-support-btns">
+      <a href="https://buymeachai.ezee.li/anishmg" target="_blank" rel="noopener">☕ Buy me a chai</a>
+      <a href="https://ko-fi.com/P5P7BMO10" target="_blank" rel="noopener">♥ Ko-fi</a>
+    </div>
+  </div>
   ${quoteHtml}
 </div>`;
 }

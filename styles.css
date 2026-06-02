@@ -258,6 +258,10 @@ table.planner tr:hover td{background:rgba(255,255,255,0.02);}
 .credits-scope{margin-top:28px;font-family:var(--sans);font-size:11px;color:var(--dim);line-height:1.8;}
 .credits-scope strong{color:var(--muted);}
 .credits-quote{margin-top:28px;font-style:italic;color:var(--dim);font-size:13px;border-top:1px solid var(--border);padding-top:18px;max-width:420px;}
+.credits-support{margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.credits-support-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.credits-support a{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border:1px solid rgba(240,192,64,.45);border-radius:9999px;font-family:var(--sans);font-size:13px;color:var(--gold);text-decoration:none;transition:background .18s ease,color .18s ease;}
+.credits-support a:hover{background:var(--gold);color:#09090f;}
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
 @media(max-width:520px){
