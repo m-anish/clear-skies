@@ -1,4 +1,6 @@
-const CACHE = 'clear-skies-v10';
+const CACHE = 'clear-skies-v11';
+// note: app.js was missing from the precache below — it relied on runtime
+// caching, which a cache-version swap wiped, breaking offline load.
 
 const ASSETS = [
   './',
@@ -13,6 +15,7 @@ const ASSETS = [
   './log.js',
   './log-ui.js',
   './print-link.js',
+  './app.js',
   './favicon.svg',
   './icon-192.png',
   './icon-512.png'
