@@ -1,4 +1,4 @@
-const CACHE = 'clear-skies-v11';
+const CACHE = 'clear-skies-v12';
 // note: app.js was missing from the precache below — it relied on runtime
 // caching, which a cache-version swap wiped, breaking offline load.
 
