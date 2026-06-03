@@ -138,11 +138,11 @@ window.SKY_DATA = {
         ['Constellation',    'Leo'],
         ['Visible',          'Dusk, very low WNW'],
         ['Sets after sunset','~1.5–2 hrs'],
-        ['Brightness',       'mag −4.5'],
-        ['At 36× (25mm)',   'Large thin crescent, ~45–55″'],
-        ['At 100× (9mm)',   '~25–30% lit, thinning crescent'],
+        ['Brightness',       'mag −4.0'],
+        ['At 36× (25mm)',   'Fat gibbous disc, ~19″'],
+        ['At 100× (9mm)',   '~60% lit, waning gibbous'],
       ],
-      note: 'Venus blazes in the WNW twilight as the brightest "star" in the sky, but it is dropping fast toward inferior conjunction in mid-August — sitting lower and thinner each evening. In the scope it is a large, dramatically thin crescent, obvious even at 36×. From Jul 4–14 it slides past Regulus, the heart of Leo, closest on Jul 9 at just 1.0° apart — a beautiful pairing of the brightest planet with a 1st-magnitude star. Catch it early in twilight from a clear western horizon before it sets.',
+      note: 'Venus is the brilliant "evening star" low in the WNW twilight after sunset, though the shallow summer ecliptic keeps it low for northern observers. In the scope it shows a fat gibbous disc, a little over half lit, slowly shrinking and waning as it climbs toward its greatest elongation from the Sun in mid-August. From Jul 4–14 it slides past Regulus, the heart of Leo, closest on Jul 9 at just 1.0° apart — a beautiful pairing of the brightest planet with a 1st-magnitude star. Catch it early in twilight from a clear western horizon before it sets.',
     },
     {
       name: 'Saturn',
@@ -354,10 +354,10 @@ window.SKY_DATA = {
     ['Seeing',               'Atmospheric steadiness. Poor seeing blurs fine detail and prevents globular resolution even under a dark sky.'],
     ['Transparency',         'Atmospheric clarity. Poor transparency dims faint nebulae and the low Sagittarius objects even when stars look sharp.'],
     ['Radiant',              'The point in the sky a meteor shower appears to stream from. The Delta Aquariid radiant sits low in the south, rising after midnight.'],
-    ['Inferior conjunction', 'When Venus passes between Earth and the Sun, briefly becoming invisible. Venus races toward this in mid-August 2026.'],
+    ['Greatest elongation', 'When a planet appears farthest from the Sun in our sky, showing a half-phase. Venus reaches it in mid-August.'],
     ['Milky Way core',       'The dense galactic centre in Sagittarius, visible as a bright cloudy band low in the south on dark July nights from 32°N.'],
   ],
-  scopeLimitNote: 'Your 114mm f/7.9 reflector\'s limits: limiting magnitude ~12 under dark skies · max useful magnification ~230× (100× is the practical ceiling most nights) · 265× more light than the naked eye · resolving power ~1 arcsecond on the steadiest nights · M22\'s nearness makes it the most resolvable globular this month, while M13 shows a full granular halo but needs 150mm+ for complete stellar resolution. Saturn\'s rings are nearly edge-on in 2026, so the Cassini Division is beyond reach until they open wider in coming years.',
+  scopeLimitNote: 'Your 114mm f/7.9 reflector\'s limits: limiting magnitude ~12 under dark skies · max useful magnification ~230× (100× is the practical ceiling most nights) · 265× more light than the naked eye · resolving power ~1 arcsecond on the steadiest nights · M22\'s nearness makes it the most resolvable globular this month, while M13 shows a full granular halo but needs 150mm+ for complete stellar resolution.',
 
   // ── CONDITIONS ─────────────────────────────────────────────────────────────
   darkSkyWindow: 'Jul 10–19',
