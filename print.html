@@ -23,6 +23,7 @@
   <!-- Static registry files (same order as index.html) -->
   <script src="sketches.js"></script>
   <script src="constellations.js"></script>
+  <script src="month-themes.js"></script>
   <script src="quotes.js"></script>
   <script src="objects-db.js"></script>
 
@@ -270,18 +271,40 @@
     // Page builders
     // ────────────────────────────────────────────────────────────────────────
 
-    function buildCover(d) {
-      var season  = (d.season || 'spring').toLowerCase();
-      var bgColor = SEASON_COVER_BG[season]     || '#f4eedf';
-      var accent  = SEASON_COVER_ACCENT[season] || '#6a4a10';
-      var titleAccent = SEASON_COVER_TITLE[season] || '#8a5c18';
+    // Lighten (amt>0, mix toward white) or darken (amt<0, scale toward black)
+    // a hex colour. Used to derive the cover palette from a single accent.
+    function shade(hex, amt) {
+      hex = String(hex).replace('#', '');
+      if (hex.length !== 6) return '#' + hex;
+      var r = parseInt(hex.slice(0, 2), 16),
+          g = parseInt(hex.slice(2, 4), 16),
+          b = parseInt(hex.slice(4, 6), 16);
+      if (amt >= 0) { r += (255 - r) * amt; g += (255 - g) * amt; b += (255 - b) * amt; }
+      else          { var f = 1 + amt; r *= f; g *= f; b *= f; }
+      function h(x) { return ('0' + Math.round(x).toString(16)).slice(-2); }
+      return '#' + h(r) + h(g) + h(b);
+    }
 
+    function buildCover(d) {
+      // Cover palette, resolved in order:
+      //   1. explicit per-edition override (d.coverBg / coverAccent / coverTitle)
+      //   2. derived from the edition/month accent — so every month is distinct
+      //   3. season default tables (legacy fallback when no accent at all)
+      var season = (d.season || 'spring').toLowerCase();
+      var theme  = (window.SKY_MONTH_THEMES && d.month)
+                 ? window.SKY_MONTH_THEMES[d.month.toLowerCase()] : null;
+      var seed   = d.seasonAccent || (theme && theme.accent) || null;
+      var bgColor     = d.coverBg     || (seed ? shade(seed,  0.86) : SEASON_COVER_BG[season])     || '#f4eedf';
+      var accent      = d.coverAccent || (seed ? shade(seed, -0.58) : SEASON_COVER_ACCENT[season]) || '#6a4a10';
+      var titleAccent = d.coverTitle  || (seed ? shade(seed, -0.34) : SEASON_COVER_TITLE[season])  || '#8a5c18';
+
+      var coverConst = d.coverConstellation || (theme && theme.constellation);
       var constSvg = '';
-      if (window.SKY_CONSTELLATIONS && window.SKY_CONSTELLATIONS[d.coverConstellation]) {
-        // Use accent colour at very low opacity as the constellation watermark
+      if (coverConst && window.SKY_CONSTELLATIONS && window.SKY_CONSTELLATIONS[coverConst]) {
+        // Accent colour at very low opacity as the constellation watermark
         constSvg = '<svg class="cover-constellation-bg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"'
                  + ' style="color:' + accent + ';opacity:0.12">'
-                 + window.SKY_CONSTELLATIONS[d.coverConstellation]
+                 + window.SKY_CONSTELLATIONS[coverConst]
                  + '</svg>';
       }
 

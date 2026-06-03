@@ -14,9 +14,17 @@ if (!D) { console.error('[app.js] No SKY_DATA — loader.js should call SKY_INIT
 document.title = `${D.month} ${D.year} — Clear Skies`;
 document.querySelector('meta[name="apple-mobile-web-app-title"]').content = `${D.month} ${D.year}`;
 
+// ── MONTH THEME ────────────────────────────────────────────────────────────
+// Per-month identity (month-themes.js): the default accent + cover
+// constellation when a data file doesn't specify its own. Keeps every
+// calendar month visually distinct with zero per-edition tuning.
+const SKY_THEME = (window.SKY_MONTH_THEMES && D.month)
+  ? window.SKY_MONTH_THEMES[D.month.toLowerCase()]
+  : null;
+
 // ── SEASON ACCENT ──────────────────────────────────────────────────────────
-// Inject --season CSS variable from SKY_DATA.seasonAccent (fallback: gold)
-const seasonAccent = D.seasonAccent || 'var(--gold)';
+// Inject --season CSS variable (SKY_DATA.seasonAccent → month theme → gold)
+const seasonAccent = D.seasonAccent || (SKY_THEME && SKY_THEME.accent) || 'var(--gold)';
 document.documentElement.style.setProperty('--season', seasonAccent);
 
 // ── HELPERS ────────────────────────────────────────────────────────────────
@@ -103,7 +111,7 @@ const N = RENDERABLE.length;
 // ── CONTENT BUILDERS ──────────────────────────────────────────────────────
 
 function constellationWatermark() {
-  const key = D.coverConstellation;
+  const key = D.coverConstellation || (SKY_THEME && SKY_THEME.constellation);
   if (!key || !window.SKY_CONSTELLATIONS) return '';
   const paths = window.SKY_CONSTELLATIONS[key];
   if (!paths) return '';

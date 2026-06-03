@@ -16,7 +16,7 @@ window.SKY_DATA = {
 
   // ── MONTH CHARACTER ────────────────────────────────────────────────────────
   season:             'summer',
-  seasonAccent:       '#5ab89a',   // deep teal-green — Milky Way season
+  seasonAccent:       '#9a72d2',   // amethyst violet — late-summer twilight & Perseids
   coverConstellation: 'perseus',   // the Perseid radiant, rising NE before dawn
   starWarmBias:       0.55,        // full summer warmth
 
@@ -356,7 +356,7 @@ window.SKY_DATA = {
     ['Greatest elongation',  'When a planet appears farthest from the Sun in our sky and shows an exact half-phase (dichotomy). Venus reaches it on Aug 15.'],
     ['Milky Way core',       'The dense galactic centre in Sagittarius, at its highest and best on dark August evenings from 32°N.'],
   ],
-  scopeLimitNote: 'Your 114mm f/7.9 reflector\'s limits: limiting magnitude ~12 under dark skies · max useful magnification ~230× (100× is the practical ceiling most nights) · 265× more light than the naked eye · resolving power ~1 arcsecond on the steadiest nights · M13 and M15 show granular halos but need 150mm+ to resolve fully, and M15\'s collapsed core stays an unresolved blaze · M31\'s spiral arms are beyond a small scope — its glowing core and the companions M32/M110 are the realistic prizes.',
+  scopeLimitNote: 'Your 114mm f/7.9 reflector\'s limits: limiting magnitude ~12 under dark skies · max useful magnification ~230× (100× is the practical ceiling most nights) · 265× more light than the naked eye · resolving power ~1 arcsecond on the best nights · M13 and M15 show granular halos but need 150mm+ to resolve fully · M31\'s spiral arms are beyond a small scope — its glowing core and the companions M32/M110 are the realistic prizes.',
 
   // ── CONDITIONS ─────────────────────────────────────────────────────────────
   darkSkyWindow: 'Aug 8–18',

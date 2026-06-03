@@ -1,4 +1,4 @@
-const CACHE = 'clear-skies-v13';
+const CACHE = 'clear-skies-v14';
 // note: app.js was missing from the precache below — it relied on runtime
 // caching, which a cache-version swap wiped, breaking offline load.
 
@@ -10,6 +10,7 @@ const ASSETS = [
   './manifest.json',
   './sketches.js',
   './constellations.js',
+  './month-themes.js',
   './quotes.js',
   './objects-db.js',
   './log.js',

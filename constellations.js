@@ -183,4 +183,74 @@ window.SKY_CONSTELLATIONS = {
       <circle cx="80"  cy="95"  r="3"   fill="currentColor"/><!-- Alkaid -->
     </g>`,
 
+  // ── GEMINI (February) ─────────────────────────────────────────────────────
+  // The twins — Castor & Pollux as bright heads on two parallel figures
+  gemini: `
+    <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="230,100 222,135 214,170 206,205"/><!-- Castor figure -->
+      <polyline points="268,108 258,142 248,176 238,208"/><!-- Pollux figure -->
+      <line x1="230" y1="100" x2="268" y2="108"/>
+      <line x1="214" y1="170" x2="248" y2="176"/>
+      <line x1="206" y1="205" x2="238" y2="208"/>
+      <circle cx="230" cy="100" r="3.5" fill="currentColor"/><!-- Castor -->
+      <circle cx="268" cy="108" r="3.5" fill="currentColor"/><!-- Pollux -->
+      <circle cx="222" cy="135" r="2"   fill="currentColor"/>
+      <circle cx="214" cy="170" r="2"   fill="currentColor"/>
+      <circle cx="206" cy="205" r="2.5" fill="currentColor"/>
+      <circle cx="258" cy="142" r="2"   fill="currentColor"/>
+      <circle cx="248" cy="176" r="2"   fill="currentColor"/>
+      <circle cx="238" cy="208" r="2.5" fill="currentColor"/>
+    </g>`,
+
+  // ── PEGASUS (October) ─────────────────────────────────────────────────────
+  // The Great Square + the neck reaching out to Enif
+  pegasus: `
+    <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="185,110 255,105 262,178 190,182 185,110"/><!-- Great Square -->
+      <polyline points="185,110 150,98 120,108 100,122"/><!-- Neck to Enif -->
+      <circle cx="185" cy="110" r="3"   fill="currentColor"/><!-- Scheat -->
+      <circle cx="255" cy="105" r="3"   fill="currentColor"/><!-- Markab -->
+      <circle cx="262" cy="178" r="3"   fill="currentColor"/><!-- Algenib -->
+      <circle cx="190" cy="182" r="3"   fill="currentColor"/>
+      <circle cx="150" cy="98"  r="2"   fill="currentColor"/>
+      <circle cx="120" cy="108" r="2"   fill="currentColor"/>
+      <circle cx="100" cy="122" r="3"   fill="currentColor"/><!-- Enif -->
+    </g>`,
+
+  // ── ANDROMEDA (November) ──────────────────────────────────────────────────
+  // The chain Alpheratz → Mirach → Almach, with M31 above Mirach
+  andromeda: `
+    <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="175,120 215,132 252,145 290,150"/><!-- Main chain -->
+      <polyline points="252,145 245,120 242,105"/><!-- Branch to Nu -->
+      <ellipse cx="239" cy="97" rx="6" ry="3" fill="currentColor" opacity="0.7" transform="rotate(-30 239 97)"/><!-- M31 -->
+      <circle cx="175" cy="120" r="3"   fill="currentColor"/><!-- Alpheratz -->
+      <circle cx="215" cy="132" r="2.5" fill="currentColor"/>
+      <circle cx="252" cy="145" r="3"   fill="currentColor"/><!-- Mirach -->
+      <circle cx="290" cy="150" r="2.5" fill="currentColor"/><!-- Almach -->
+      <circle cx="245" cy="120" r="2"   fill="currentColor"/>
+      <circle cx="242" cy="105" r="2"   fill="currentColor"/>
+    </g>`,
+
+  // ── TAURUS (December) ─────────────────────────────────────────────────────
+  // The Hyades V with Aldebaran, the horns, and the Pleiades cluster
+  taurus: `
+    <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="150,185 185,168 220,155 250,148"/><!-- Upper horn -->
+      <polyline points="150,185 180,198 215,205 248,205"/><!-- Lower arm + horn -->
+      <circle cx="150" cy="185" r="2"   fill="currentColor"/>
+      <circle cx="185" cy="168" r="2"   fill="currentColor"/>
+      <circle cx="220" cy="155" r="2"   fill="currentColor"/>
+      <circle cx="250" cy="148" r="3"   fill="currentColor"/><!-- El Nath -->
+      <circle cx="180" cy="198" r="4"   fill="currentColor"/><!-- Aldebaran -->
+      <circle cx="215" cy="205" r="2"   fill="currentColor"/>
+      <circle cx="248" cy="205" r="2.5" fill="currentColor"/>
+      <circle cx="100" cy="135" r="1.6" fill="currentColor"/><!-- Pleiades -->
+      <circle cx="108" cy="128" r="1.6" fill="currentColor"/>
+      <circle cx="95"  cy="128" r="1.4" fill="currentColor"/>
+      <circle cx="104" cy="142" r="1.4" fill="currentColor"/>
+      <circle cx="112" cy="138" r="1.4" fill="currentColor"/>
+      <circle cx="97"  cy="120" r="1.3" fill="currentColor"/>
+    </g>`,
+
 };

@@ -16,7 +16,7 @@ window.SKY_DATA = {
 
   // ── MONTH CHARACTER ────────────────────────────────────────────────────────
   season:             'summer',
-  seasonAccent:       '#5ab89a',   // deep teal-green — Milky Way season
+  seasonAccent:       '#5277cc',   // cobalt blue — deep high-summer night skies
   coverConstellation: 'cygnus',    // the Northern Cross riding high in the east
   starWarmBias:       0.55,        // full summer warmth
 
