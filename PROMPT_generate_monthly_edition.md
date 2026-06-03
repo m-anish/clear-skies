@@ -90,12 +90,14 @@ window.SKY_DATA = {
   subtitle:    'Northern Hemisphere · Interactive Guide',
 
   // ── MONTH CHARACTER ────────────────────────────────────────────────────
-  // Drives cover watermark, starfield warmth, and italic accent colour.
-  // All optional — app.js has sensible defaults if omitted.
-  season:             '[winter|spring|summer|autumn]',
-  seasonAccent:       '[hex colour — warm amber spring, cool blue winter, deep teal summer, ember autumn]',
-  coverConstellation: '[key from constellations.js — leo|virgo|scorpius|cygnus|cassiopeia|perseus|orion|ursa_major]',
+  // Accent colour + cover constellation are AUTOMATIC — month-themes.js gives
+  // every calendar month its own distinct pair. Do NOT set seasonAccent or
+  // coverConstellation here unless you deliberately want to override the
+  // month default. Just set the season label and starfield warmth.
+  season:             '[winter|spring|summer|autumn]',  // label + legacy fallback
   starWarmBias:       [0.0–1.0 — 0.35 neutral, 0.55 summer, 0.25 winter],
+  // seasonAccent:       '#rrggbb',   // optional override — else from month-themes.js
+  // coverConstellation: 'key',       // optional override — else from month-themes.js
 
   // ── TELESCOPE — copy verbatim ──────────────────────────────────────────
   scope: {
@@ -349,10 +351,6 @@ Produce in this exact order, clearly delimited with headers:
 
 **After deploying**, open the browser console. Any missing `svgId` reference will log: `[app.js] Missing sketch: sk_xxx — add it to sketches.js`. This is your sanity check.
 
-**The `coverConstellation` field** references a key in `constellations.js`. Current keys: `leo, virgo, scorpius, cygnus, cassiopeia, perseus, orion, ursa_major`. To add a new constellation for a month not yet covered, append it to `constellations.js` — the file comments explain the SVG format.
+**Colour and constellation are assigned automatically by `month-themes.js`.** Every calendar month already has its own distinct accent colour and cover constellation, so a new edition needs *neither* `seasonAccent` *nor* `coverConstellation` in its data file. The accent tints the year number and active nav item online, and is lightened/darkened to derive the printed cover palette; the constellation is drawn faint behind the cover title.
 
-**The `seasonAccent` colour** tints the year number on the cover and the active nav item. Suggested palette:
-- Winter (Dec–Feb): `#7090c8` (cool blue-white)
-- Spring (Mar–May): `#c8955a` (warm amber-rose)
-- Summer (Jun–Aug): `#5ab89a` (deep teal-green, Milky Way season)
-- Autumn (Sep–Nov): `#c87840` (ember orange)
+Set these fields in the data file **only to override** a month's default. To change a month's standing identity instead, edit its entry in `month-themes.js` — the single source of truth for all 12 months (`january … december`, each `{ accent, constellation }`). `constellations.js` currently provides 12 watermarks: `leo, virgo, scorpius, cygnus, cassiopeia, perseus, orion, ursa_major, gemini, pegasus, andromeda, taurus` — append more there (the file comments explain the SVG format) if you want a different one.
